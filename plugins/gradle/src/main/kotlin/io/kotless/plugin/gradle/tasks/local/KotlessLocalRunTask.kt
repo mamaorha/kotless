@@ -5,8 +5,10 @@ import io.kotless.parser.LocalParser
 import io.kotless.plugin.gradle.dsl.*
 import io.kotless.plugin.gradle.utils.gradle.*
 import org.gradle.api.DefaultTask
+import org.gradle.api.plugins.ApplicationPluginConvention
 import org.gradle.api.tasks.*
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.getPlugin
 import java.io.File
 
 /**
@@ -42,6 +44,12 @@ internal open class KotlessLocalRunTask : DefaultTask() {
     @get:Internal
     lateinit var localstack: LocalStackRunner
 
+    @get:Internal
+    var customAgent: String? = null
+
+    @get:Internal
+    var additionalEnvironment: Map<String, String> = emptyMap()
+
     @TaskAction
     @OptIn(InternalAPI::class)
     fun act() = with(project) {
@@ -74,7 +82,7 @@ internal open class KotlessLocalRunTask : DefaultTask() {
                 environment[Constants.Local.autowarmMinutes] = myKotless.config.optimization.autowarm.minutes
             }
 
-            for ((key, value) in myKotless.webapp.lambda.mergedEnvironment) {
+            for ((key, value) in (myKotless.webapp.lambda.mergedEnvironment + additionalEnvironment)) {
                 environment[key] = value
             }
 
@@ -84,7 +92,9 @@ internal open class KotlessLocalRunTask : DefaultTask() {
 
             isIgnoreExitValue = true
 
-            if(myKotless.extensions.local.debugPort != null) {
+            if (customAgent != null) {
+                this.jvmArguments.add(customAgent)
+            } else if (myKotless.extensions.local.debugPort != null) {
                 debugOptions {
                     it.enabled.set(true)
                     it.server.set(true)
@@ -95,6 +105,8 @@ internal open class KotlessLocalRunTask : DefaultTask() {
         }
 
         try {
+            convention.getPlugin<ApplicationPluginConvention>().mainClassName = kotless.config.dsl.typeOrDefault.descriptor.localEntryPoint
+            run.standardInput = System.`in`
             run.exec()
         } catch (e: Throwable) {
             logger.lifecycle("Gracefully shutting down Kotless local")

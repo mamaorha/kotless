@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 group = "io.kotless"
-version = "0.3.1"
+version = "0.3.2"
 
 plugins {
     id("io.gitlab.arturbosch.detekt") version ("1.23.4") apply true
@@ -20,6 +20,7 @@ subprojects {
         mavenCentral()
         gradlePluginPortal()
         maven(url = uri("https://packages.jetbrains.team/maven/p/ktls/maven"))
+        mavenLocal()
     }
 
     val sourceSets = this.extensions.getByName("sourceSets") as SourceSetContainer
@@ -28,6 +29,7 @@ subprojects {
     task<Jar>("sourcesJar") {
         archiveClassifier.set("sources")
         from(sourceSets["main"]!!.allSource)
+        this.exclude("io/kotless/graal/aws/runtime/Adapter**")
     }
 
     publishing {

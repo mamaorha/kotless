@@ -3,6 +3,10 @@ import io.kotless.buildsrc.Versions
 group = rootProject.group
 version = rootProject.version
 
+repositories {
+    mavenLocal()
+}
+
 dependencies {
     implementation(gradleApi())
     implementation(gradleKotlinDsl())
@@ -16,7 +20,19 @@ dependencies {
 
     //Bundled plugins
     implementation("com.github.johnrengelman", "shadow", "8.1.1")
-    implementation("io.kcdk", "io.kcdk.gradle.plugin", "0.1.1")
+    implementation("com.bmuschko", "gradle-docker-plugin", "6.7.0")
+    implementation("org.springframework.boot", "spring-boot-gradle-plugin", "3.2.0") {
+        exclude("com.fasterxml.jackson")
+        exclude("com.fasterxml.jackson.core")
+        exclude("com.fasterxml.jackson.dataformat")
+        exclude("com.fasterxml.jackson.module")
+    }
+    implementation("org.graalvm.buildtools", "native-gradle-plugin", "0.9.28") {
+        exclude("com.fasterxml.jackson")
+        exclude("com.fasterxml.jackson.core")
+        exclude("com.fasterxml.jackson.dataformat")
+        exclude("com.fasterxml.jackson.module")
+    }
 
     implementation("org.apache.logging.log4j", "log4j-core", "2.16.0")
 
@@ -26,7 +42,9 @@ dependencies {
     //utils
     implementation("org.codehaus.plexus", "plexus-utils", "3.3.0")
     implementation("org.codehaus.plexus", "plexus-archiver", "4.2.1")
-    implementation("org.codehaus.plexus", "plexus-container-default", "2.1.0")
+    implementation("org.codehaus.plexus", "plexus-container-default", "2.1.0") {
+        exclude("com.google.collections", "google-collections")
+    }
 
     //terraform DSL
     implementation("io.terraformkt.providers:aws:3.14.1-0.1.4")
