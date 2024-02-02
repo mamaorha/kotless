@@ -15,7 +15,7 @@ import org.reflections.Reflections
 import kotlin.reflect.KClass
 
 object PermissionsProcessor {
-    private val PERMISSION_ANNOTATIONS_CLASSES = listOf(S3Bucket::class, SSMParameters::class, DynamoDBTable::class, SQSQueue::class, Resource::class)
+    private val PERMISSION_ANNOTATIONS_CLASSES = listOf(S3Bucket::class, SSMParameters::class, DynamoDBTable::class, SQSQueue::class, Cognito::class, SecretManager::class, Resource::class)
 
     fun process(func: KtExpression, context: BindingContext, processor: ProcessorContext): Set<Permission> {
         val permissions = HashSet<Permission>()
@@ -62,6 +62,18 @@ object PermissionsProcessor {
                         val id = annotation.getValue(context, SQSQueue::queueName)!!
                         val level = annotation.getEnumValue(context, SQSQueue::level)!!
                         permissions.add(AWSPermission(AwsResource.SQSQueue, level, setOf(id)))
+                    }
+
+                    Cognito::class -> {
+                        val id = annotation.getValue(context, Cognito::userPoolsId)!!
+                        val level = annotation.getEnumValue(context, Cognito::level)!!
+                        permissions.add(AWSPermission(AwsResource.Cognito, level, setOf("userpool/$id")))
+                    }
+
+                    SecretManager::class -> {
+                        val id = annotation.getValue(context, SecretManager::pattern)!!
+                        val level = annotation.getEnumValue(context, SecretManager::level)!!
+                        permissions.add(AWSPermission(AwsResource.SecretManager, level, setOf(id)))
                     }
 
                     Resource::class -> {
@@ -112,6 +124,18 @@ object PermissionsProcessor {
                         val id = annotation.queueName
                         val level = annotation.level
                         permissions.add(AWSPermission(AwsResource.SQSQueue, level, setOf(id)))
+                    }
+
+                    is Cognito -> {
+                        val id = annotation.userPoolsId
+                        val level = annotation.level
+                        permissions.add(AWSPermission(AwsResource.Cognito, level, setOf("userpool/$id")))
+                    }
+
+                    is SecretManager -> {
+                        val id = annotation.pattern
+                        val level = annotation.level
+                        permissions.add(AWSPermission(AwsResource.SecretManager, level, setOf(id)))
                     }
 
                     is Resource -> {
