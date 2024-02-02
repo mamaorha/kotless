@@ -49,7 +49,7 @@ internal object DynamicRoutesProcessor : SubTypesProcessor<Unit>() {
 
                     val method = functions[element.getFqName(binding)] ?: error(element, "Unknown Ktor HTTP handler definition")
 
-                    val permissions = PermissionsProcessor.process(element, binding, context) + globalPermissions
+                    val permissions = PermissionsProcessor.process(files, element, binding, context) + globalPermissions
 
                     val path = URIPath(outer, element.getArgument("path", binding).asPath(binding))
                     val name = "${path.parts.joinToString(separator = "_")}_${method.name}"

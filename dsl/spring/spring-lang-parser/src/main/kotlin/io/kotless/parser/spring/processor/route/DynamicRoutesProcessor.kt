@@ -29,7 +29,7 @@ internal object DynamicRoutesProcessor : AnnotationProcessor<Unit>() {
 
                 for (method in SpringAnnotationUtils.getMethods(binding, el)) {
                     val path = SpringAnnotationUtils.getRoutePath(binding, el)
-                    val permissions = PermissionsProcessor.process(el, binding, context)
+                    val permissions = PermissionsProcessor.process(files, el, binding, context)
                     val name = el.fqName!!.asString() + "_" + method.name
 
                     val key = TypedStorage.Key<Lambda>()

@@ -30,7 +30,7 @@ open class Parser(private val processors: Set<Processor<*>>) {
         val ktFiles = ParseUtil.analyze(sources, environment)
         val binding = ResolveUtil.analyze(ktFiles, environment).bindingContext
 
-        val context = ProcessorContext(jar, config, lambda)
+        val context = ProcessorContext(jar, config, lambda, libs)
 
         processResources(resources, context)
 

@@ -35,6 +35,18 @@ enum class AwsResource(
         read = setOf("Get*", "List*", "ReceiveMessage"),
         write = setOf("DeleteMessage", "PurgeQueue", "SendMessage")
     ),
+    Cognito(
+        "cognito-idp",
+        glob = { region, account -> "arn:aws:cognito-idp:$region:$account" },
+        read = setOf("AdminGetUser", "GetUser", "ListUsers"),
+        write = setOf("AdminUpdateUserAttributes", "ChangePassword", "ConfirmForgotPassword", "DeleteUser", "SignUp", "UpdateUserAttributes")
+    ),
+    SecretManager(
+        "secretsmanager",
+        glob = { region, account -> "arn:aws:secretsmanager:$region:$account" },
+        read = setOf("BatchGetSecretValue", "DescribeSecret", "GetRandomPassword", "GetResourcePolicy", "GetSecretValue", "ListSecretVersionIds", "ListSecrets"),
+        write = setOf("CancelRotateSecret", "CreateSecret", "DeleteSecret", "PutSecretValue", "RestoreSecret", "RotateSecret", "UpdateSecret", "UpdateSecretVersionStage")
+    ),
     CloudWatchLogs(
         "logs",
         glob = { region, account -> "arn:aws:logs:$region:$account" },

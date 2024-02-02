@@ -3,7 +3,7 @@ package io.kotless.dsl.reflection
 import io.kotless.InternalAPI
 import io.kotless.dsl.config.KotlessAppConfig
 import org.reflections.Reflections
-import org.reflections.scanners.*
+import org.reflections.scanners.Scanners
 import org.reflections.util.ClasspathHelper
 import org.reflections.util.ConfigurationBuilder
 import java.lang.reflect.Method
@@ -30,7 +30,7 @@ object ReflectionScanner {
             .filterInputsBy { file: String? ->
                 KotlessAppConfig.packages.any { pckg -> file?.startsWith(pckg) ?: false }
             }
-            .setScanners(MethodAnnotationsScanner(), TypeAnnotationsScanner(), SubTypesScanner(), FieldAnnotationsScanner())
+            .setScanners(Scanners.MethodsAnnotated, Scanners.TypesAnnotated, Scanners.SubTypes, Scanners.FieldsAnnotated)
         )
     }
 

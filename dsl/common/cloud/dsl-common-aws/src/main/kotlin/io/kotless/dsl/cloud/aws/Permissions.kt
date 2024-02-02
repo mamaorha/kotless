@@ -17,3 +17,11 @@ annotation class DynamoDBTable(val table: String, val level: PermissionLevel)
 /** Delegates permissions to specified SQS queue to entity with annotation */
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS, AnnotationTarget.PROPERTY)
 annotation class SQSQueue(val queueName: String, val level: PermissionLevel)
+
+/** Delegates permissions to specified Cognito entity with annotation */
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS, AnnotationTarget.PROPERTY)
+annotation class Cognito(val userPoolsId: String, val level: PermissionLevel)
+
+/** Delegates permissions to specified SecretManager records by pattern with annotation */
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS, AnnotationTarget.PROPERTY)
+annotation class SecretManager(val pattern: String, val level: PermissionLevel)

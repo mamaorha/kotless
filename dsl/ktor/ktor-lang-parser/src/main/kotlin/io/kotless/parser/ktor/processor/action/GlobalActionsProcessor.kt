@@ -32,7 +32,7 @@ internal object GlobalActionsProcessor : SubTypesProcessor<GlobalActionsProcesso
                 ) { element ->
                     val event = element.getArgument("definition", binding)
                     if (event.asReferencedDescriptorOrNull(binding)?.fqNameSafe?.asString() == "io.kotless.dsl.ktor.lang.LambdaWarming") {
-                        permissions += PermissionsProcessor.process(element, binding, context)
+                        permissions += PermissionsProcessor.process(files, element, binding, context)
                     }
                 }
             }

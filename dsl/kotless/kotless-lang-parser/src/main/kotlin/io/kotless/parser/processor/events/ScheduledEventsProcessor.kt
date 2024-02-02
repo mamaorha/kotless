@@ -32,7 +32,7 @@ internal object ScheduledEventsProcessor : AnnotationProcessor<Unit>() {
             require(func, func.fqName != null) { "@Scheduled cannot be applied to anonymous function" }
             require(func, func.valueParameters.isEmpty()) { "@Scheduled cannot be applied to ${func.fqName!!.asString()} since it has parameters" }
 
-            val routePermissions = PermissionsProcessor.process(func, binding, context) + permissions
+            val routePermissions = PermissionsProcessor.process(files, func, binding, context) + permissions
 
             val id = (entry.getValue(binding, Scheduled::id) ?: "").ifBlank { func.fqName!!.asString().hashCode().absoluteValue.toString() }
 
