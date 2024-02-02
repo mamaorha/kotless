@@ -9,7 +9,7 @@ dependencies {
     api(project(":dsl:common:dsl-common"))
 
     api(kotlin("reflect"))
-    api("org.reflections", "reflections", "0.9.11")
+    api("org.reflections", "reflections", "0.10.2")
 
     implementation("ch.qos.logback", "logback-classic", Versions.logback)
 }
