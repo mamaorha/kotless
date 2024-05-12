@@ -2,9 +2,15 @@ package io.kotless.plugin.gradle.tasks.terraform
 
 import io.kotless.plugin.gradle.dsl.kotless
 import io.kotless.plugin.gradle.utils.CommandLine
+import io.ktor.util.*
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.*
 import java.io.File
+import java.io.IOException
+import java.nio.charset.StandardCharsets
+import java.nio.file.*
+import kotlin.io.path.isRegularFile
+
 
 /**
  * TerraformOperation task executes specified operation on generated terraform code
@@ -39,6 +45,8 @@ internal open class TerraformOperationTask : DefaultTask() {
 
     @TaskAction
     fun act() {
+        convertDosToUnix(project.projectDir.toPath())
+
         CommandLine.executeOrFail(
             exec = TerraformDownloadTask.tfBin(project).absolutePath,
             args = operation.op,
@@ -47,5 +55,36 @@ internal open class TerraformOperationTask : DefaultTask() {
             redirectStdout = true,
             redirectErr = true
         )
+    }
+
+    private fun convertDosToUnix(folderPath: Path) {
+        try {
+            Files.walk(folderPath)
+                .filter { it != null }
+                .filter { path: Path -> Files.isRegularFile(path) }
+                .forEach { file: Path ->
+                    try {
+                        convertFileDosToUnix(file)
+                    } catch (e: IOException) {
+                        logger.error("Failed to convert file: $file", e)
+                    }
+                }
+
+            logger.lifecycle("Dos2Unix Conversion completed successfully.")
+        } catch (e: IOException) {
+            logger.error("Failed to walk through folder: $folderPath", e)
+        }
+    }
+
+    private fun convertFileDosToUnix(file: Path) {
+        val extension by lazy { file.extension.lowercase() }
+
+        if (file.isRegularFile() && (extension == "kt" || extension == "java")) {
+            val fileBytes: ByteArray = Files.readAllBytes(file)
+            var fileContent = String(fileBytes, StandardCharsets.UTF_8)
+            fileContent = fileContent.replace("\r\n".toRegex(), "\n") // Convert DOS to Unix
+            Files.write(file, fileContent.toByteArray(StandardCharsets.UTF_8))
+            logger.lifecycle("Converted file: $file")
+        }
     }
 }
