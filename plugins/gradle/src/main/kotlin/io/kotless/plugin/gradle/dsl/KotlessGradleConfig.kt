@@ -149,9 +149,9 @@ class KotlessGradleConfig(project: Project) : Serializable {
 
             /**
              * Version of Terraform to use.
-             * By default, `0.13.7`
+             * By default, `1.8.2`
              */
-            var version: String = "0.13.7"
+            var version: String = "1.8.2"
 
             sealed class BackendGradle<S : StorageGradle> : Serializable {
                 @KotlessDSLTag
