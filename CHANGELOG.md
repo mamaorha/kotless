@@ -2,7 +2,13 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
-# 0.3.2 - 2023-12-25
+# 0.3.3 - 2024-06-10
+
+## Changed
+
+* Support lambda VPC
+
+# 0.3.3 - 2023-12-25
 
 ## Changed
 

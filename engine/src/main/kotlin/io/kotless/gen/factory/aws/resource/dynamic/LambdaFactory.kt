@@ -48,11 +48,19 @@ object LambdaFactory : GenerationFactory<Lambda, LambdaFactory.Output> {
         }
 
         val policy_document = iam_policy_document(context.names.tf(entity.name)) {
-            for (permission in entity.permissions.map{it as AWSPermission}.sortedBy { it.resource }) {
+            for (permission in entity.permissions.map { it as AWSPermission }.sortedBy { it.resource }) {
                 statement {
                     effect = "Allow"
                     resources = permission.cloudIds(info.region_name, info.account_id).toTypedArray()
                     actions = permission.actions.map { "${permission.resource.prefix}:$it" }.toTypedArray()
+                }
+            }
+
+            if(entity.config.vpcConfig != null) {
+                statement {
+                    effect = "Allow"
+                    resources = arrayOf("*")
+                    actions = arrayOf("ec2:CreateNetworkInterface", "ec2:DescribeNetworkInterfaces", "ec2:DescribeSubnets")
                 }
             }
         }
@@ -81,6 +89,13 @@ object LambdaFactory : GenerationFactory<Lambda, LambdaFactory.Output> {
             if (entity.config.environment.isNotEmpty()) {
                 environment {
                     variables(entity.config.environment)
+                }
+            }
+
+            entity.config.vpcConfig?.let { vpc ->
+                vpcConfig {
+                    security_group_ids = vpc.securityGroupIds.toTypedArray()
+                    subnet_ids = vpc.subnetIds.toTypedArray()
                 }
             }
         }

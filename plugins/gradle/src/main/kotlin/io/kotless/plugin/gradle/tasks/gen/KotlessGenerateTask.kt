@@ -81,14 +81,14 @@ internal open class KotlessGenerateTask : DefaultTask() {
             "Stated in Gradle DSL runtime $runtime is not compatible with current compile target $target"
         }
 
-        val lambda = Lambda.Config(webapp.lambda.memoryMb, webapp.lambda.timeoutSec, runtime, webapp.lambda.mergedEnvironment)
+        val lambda = Lambda.Config(webapp.lambda.memoryMb, webapp.lambda.timeoutSec, runtime, webapp.lambda.mergedEnvironment, webapp.lambda.vpc)
 
         val parsed = dsl.descriptor.parser.parse(myAllSources, myAllResources, jar, config, lambda, Dependencies.getDependencies(project))
 
         val app = Application(
             dns = webapp.dns?.toSchema(),
             api = Application.API(
-                name = project.name,
+                name = webapp.deployment.name ?: project.name,
                 deployment = webapp.deployment.toSchema(project.path),
                 dynamics = parsed.routes.dynamics,
                 statics = parsed.routes.statics
