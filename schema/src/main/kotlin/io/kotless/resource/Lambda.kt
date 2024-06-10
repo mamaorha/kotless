@@ -5,6 +5,7 @@ import io.kotless.permission.AWSPermission
 import io.kotless.permission.Permission
 import io.kotless.utils.Visitable
 import java.io.File
+import java.io.Serializable
 
 /**
  * Serverless function (Lambda)
@@ -36,8 +37,9 @@ data class Lambda(val name: String, val file: File, val entrypoint: Entrypoint, 
      * @param memoryMb memory in megabytes available for a lambda
      * @param timeoutSec limit of lambda execution in seconds
      * @param environment environment variables available for lambda
+     * @param vpcConfig vpc configuration for lambda
      */
-    data class Config(val memoryMb: Int, val timeoutSec: Int, val runtime: Runtime, val environment: Map<String, String>) {
+    data class Config(val memoryMb: Int, val timeoutSec: Int, val runtime: Runtime, val environment: Map<String, String>, val vpcConfig: Vpc?) {
         enum class Runtime(val aws: String) {
             Java8("java8"),
             Java11("java11"),
@@ -46,5 +48,7 @@ data class Lambda(val name: String, val file: File, val entrypoint: Entrypoint, 
             GraalVM("provided.al2023"),
             Provided("provided")
         }
+
+        data class Vpc(val securityGroupIds: List<String>, val subnetIds: List<String>) : Serializable
     }
 }

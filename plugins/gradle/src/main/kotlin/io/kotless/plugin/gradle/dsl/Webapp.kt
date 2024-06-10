@@ -3,6 +3,7 @@ package io.kotless.plugin.gradle.dsl
 import io.kotless.InternalAPI
 import io.kotless.dsl.config.KotlessAppConfig
 import io.kotless.resource.Lambda.Config.Runtime
+import io.kotless.resource.Lambda.Config.Vpc
 import org.gradle.api.Project
 import java.io.File
 import java.io.Serializable
@@ -26,6 +27,9 @@ class Webapp(project: Project) : Serializable {
 
         /** Runtime used to start Lambdas. By default, would be equal to the lowest compatible version.  */
         var runtime: Runtime? = null
+
+        /** Custom vpc to add to the lambda.  */
+        var vpc: Vpc? = null
 
         @OptIn(InternalAPI::class)
         internal val mergedEnvironment: Map<String, String>
