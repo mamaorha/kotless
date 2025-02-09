@@ -14,7 +14,9 @@ object RestAPIFactory : GenerationFactory<Application.API, RestAPIFactory.Output
 
     override fun generate(entity: Application.API, context: GenerationContext): GenerationFactory.GenerationResult<Output> {
         val restApi = api_gateway_rest_api(context.names.tf(entity.name)) {
-            name = context.names.aws(entity.name)
+            val zone = context.webapp.dns?.zone?.split(".")?.joinToString("-") ?: entity.name
+
+            name = context.names.aws(zone)
             binary_media_types = MimeType.binary().map { it.mimeText }.toTypedArray()
         }
 

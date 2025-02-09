@@ -32,7 +32,8 @@ object StaticRoleFactory : GenerationFactory<Application, StaticRoleFactory.Outp
 
 
         val iam_role = iam_role(context.names.tf("kotless", "static", "role")) {
-            name = context.names.aws("kotless", "static", "role")
+            val zone = context.webapp.dns?.zone?.split(".")?.joinToString("-")
+            name = if(zone != null) context.names.aws(zone, "kotless", "static", "role") else context.names.aws("kotless", "static", "role")
             assume_role_policy = assume::json.ref
         }
 
