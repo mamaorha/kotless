@@ -1,5 +1,6 @@
 rootProject.name = "kotless"
 
+include(":lib")
 include(":schema")
 include(":model")
 include(":engine")

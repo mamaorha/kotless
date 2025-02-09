@@ -47,8 +47,8 @@ dependencies {
     }
 
     //terraform DSL
-    implementation(files("../../lib/io.terraformkt/entities/0.1.5/entities-0.1.5.jar"))
-    implementation(files("../../lib/io.terraformkt.providers/aws/3.14.1-0.1.4/aws-3.14.1-0.1.4.jar"))
+    implementation("io.terraformkt:entities:0.1.5")
+    implementation("io.terraformkt.providers:aws:3.14.1-0.1.4")
 
     api("com.fasterxml.jackson.core", "jackson-databind", "2.10.3")
     api("com.fasterxml.jackson.dataformat", "jackson-dataformat-cbor", "2.10.3")
