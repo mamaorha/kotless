@@ -115,6 +115,20 @@ class Webapp(project: Project) : Serializable {
         deployment.configure()
     }
 
+    /** CORS configuration for API Gateway */
+    @KotlessDSLTag
+    class CORS : Serializable {
+        /** Whether to enable CORS for the API Gateway */
+        var enabled: Boolean = false
+    }
+
+    internal val cors: CORS = CORS()
+
+    /** CORS configuration for API Gateway */
+    @KotlessDSLTag
+    fun cors(configure: CORS.() -> Unit) {
+        cors.configure()
+    }
 
     @KotlessDSLTag
     data class DNS(val alias: String, val zone: String, val certificate: String ) : Serializable

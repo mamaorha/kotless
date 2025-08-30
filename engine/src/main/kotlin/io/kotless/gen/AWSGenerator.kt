@@ -23,7 +23,7 @@ object AWSGenerator {
         Application::class to setOf(InfoFactory, StaticRoleFactory),
         KotlessConfig.Cloud.Terraform.AWS::class to setOf(TFConfigFactory, ProvidersFactory),
 
-        Application.API::class to setOf(DomainFactory, RestAPIFactory),
+        Application.API::class to setOf(DomainFactory, RestAPIFactory, CorsFactory),
         Application.API.Deployment::class to setOf(DeploymentFactory),
         Application.DNS::class to setOf(CertificateFactory, RecordFactory, ZoneFactory),
 

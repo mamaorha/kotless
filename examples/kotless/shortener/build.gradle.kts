@@ -37,6 +37,9 @@ kotless {
 
     webapp {
         dns("short", "kotless.io")
+        cors {
+            enabled = true
+        }
     }
 
     extensions {

@@ -11,6 +11,8 @@ import io.kotless.terraform.functions.link
 import io.terraformkt.aws.resource.apigateway.api_gateway_integration
 import io.terraformkt.aws.resource.apigateway.api_gateway_method
 import io.terraformkt.aws.resource.lambda.lambda_permission
+import io.terraformkt.aws.resource.apigateway.api_gateway_method_response
+import io.terraformkt.aws.resource.apigateway.api_gateway_integration_response
 
 @OptIn(InternalAPI::class)
 object DynamicRouteFactory : GenerationFactory<Application.API.DynamicRoute, DynamicRouteFactory.Output>, AbstractRouteFactory() {
@@ -59,6 +61,41 @@ object DynamicRouteFactory : GenerationFactory<Application.API.DynamicRoute, Dyn
 
             type = "AWS_PROXY"
             uri = "arn:aws:apigateway:${info.region_name}:lambda:path/2015-03-31/functions/${lambda.lambda_arn}/invocations"
+        }
+
+        // Add CORS headers to method response if CORS is enabled
+        if (context.webapp.api.allowCors) {
+            val methodResponse = api_gateway_method_response(context.names.tf(entity.path.parts, "${entity.method.name}_cors")) {
+                depends_on = arrayOf(link(method.hcl_ref))
+                rest_api_id = api.rest_api_id
+                resource_id = resourceApi.id
+                http_method = entity.method.name
+                status_code = "200"
+                responseParameters(
+                    mapOf(
+                        "method.response.header.Access-Control-Allow-Origin" to true,
+                        "method.response.header.Access-Control-Allow-Headers" to true,
+                        "method.response.header.Access-Control-Allow-Methods" to true
+                    )
+                )
+            }
+
+            val integrationResponse = api_gateway_integration_response(context.names.tf(entity.path.parts, "${entity.method.name}_cors")) {
+                depends_on = arrayOf(link(methodResponse.hcl_ref), link(integration.hcl_ref))
+                rest_api_id = api.rest_api_id
+                resource_id = resourceApi.id
+                http_method = entity.method.name
+                status_code = "200"
+                responseParameters(
+                    mapOf(
+                        "method.response.header.Access-Control-Allow-Origin" to "'*'",
+                        "method.response.header.Access-Control-Allow-Headers" to "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                        "method.response.header.Access-Control-Allow-Methods" to "'GET,POST,PUT,DELETE,OPTIONS'"
+                    )
+                )
+            }
+
+            return GenerationFactory.GenerationResult(Output(integration.hcl_ref), method, integration, permission, methodResponse, integrationResponse)
         }
 
         return GenerationFactory.GenerationResult(Output(integration.hcl_ref), method, integration, permission)

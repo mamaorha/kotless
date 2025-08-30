@@ -69,7 +69,6 @@ object StaticRouteFactory : GenerationFactory<Application.API.StaticRoute, Stati
 
         val response = api_gateway_integration_response(context.names.tf(entity.path.parts).ifBlank { "root_resource" }) {
             depends_on = arrayOf(link(method_response.hcl_ref), link(integration.hcl_ref))
-
             rest_api_id = api.rest_api_id
             resource_id = resourceApi.id
             http_method = method::http_method.ref
@@ -82,6 +81,47 @@ object StaticRouteFactory : GenerationFactory<Application.API.StaticRoute, Stati
             )
             if (context.schema.statics[entity.resource]!!.mime.isBinary)
                 content_handling = "CONVERT_TO_BINARY"
+        }
+
+        // Add CORS headers to static route responses if CORS is enabled
+        if (context.webapp.api.allowCors) {
+            val corsMethodResponse = api_gateway_method_response(context.names.tf(entity.path.parts, "cors").ifBlank { "root_resource_cors" }) {
+                depends_on = arrayOf(link(method.hcl_ref))
+                rest_api_id = api.rest_api_id
+                resource_id = resourceApi.id
+                http_method = method::http_method.ref
+                status_code = "200"
+                responseParameters(
+                    mapOf(
+                        "method.response.header.Content-Type" to true,
+                        "method.response.header.Content-Length" to true,
+                        "method.response.header.Access-Control-Allow-Origin" to true,
+                        "method.response.header.Access-Control-Allow-Headers" to true,
+                        "method.response.header.Access-Control-Allow-Methods" to true
+                    )
+                )
+            }
+
+            val corsIntegrationResponse = api_gateway_integration_response(context.names.tf(entity.path.parts, "cors").ifBlank { "root_resource_cors" }) {
+                depends_on = arrayOf(link(corsMethodResponse.hcl_ref), link(integration.hcl_ref))
+                rest_api_id = api.rest_api_id
+                resource_id = resourceApi.id
+                http_method = method::http_method.ref
+                status_code = "200"
+                responseParameters(
+                    mapOf(
+                        "method.response.header.Content-Type" to "integration.response.header.Content-Type",
+                        "method.response.header.Content-Length" to "integration.response.header.Content-Length",
+                        "method.response.header.Access-Control-Allow-Origin" to "'*'",
+                        "method.response.header.Access-Control-Allow-Headers" to "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                        "method.response.header.Access-Control-Allow-Methods" to "'GET,POST,PUT,DELETE,OPTIONS'"
+                    )
+                )
+                if (context.schema.statics[entity.resource]!!.mime.isBinary)
+                    content_handling = "CONVERT_TO_BINARY"
+            }
+
+            return GenerationFactory.GenerationResult(Output(integration.hcl_ref), method, response, method_response, integration, corsMethodResponse, corsIntegrationResponse)
         }
 
         return GenerationFactory.GenerationResult(Output(integration.hcl_ref), method, response, method_response, integration)

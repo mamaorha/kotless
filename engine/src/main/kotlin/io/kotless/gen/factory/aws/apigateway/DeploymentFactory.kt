@@ -23,9 +23,17 @@ object DeploymentFactory : GenerationFactory<Application.API.Deployment, Deploym
         val api = context.output.get(context.webapp.api, RestAPIFactory)
         val statics = context.webapp.api.statics.map { context.output.get(it, StaticRouteFactory).integration }
         val dynamics = context.webapp.api.dynamics.map { context.output.get(it, DynamicRouteFactory).integration }
+        
+        // Add CORS resources to dependencies if CORS is enabled
+        val corsResources = if (context.webapp.api.allowCors && context.output.check(context.webapp.api, CorsFactory)) {
+            val cors = context.output.get(context.webapp.api, CorsFactory)
+            cors.corsMethods + cors.corsIntegrations
+        } else {
+            emptyList()
+        }
 
         val deployment = api_gateway_deployment(context.names.tf(entity.name)) {
-            depends_on = (statics + dynamics).map { link(it) }.toTypedArray()
+            depends_on = (statics + dynamics + corsResources).map { link(it) }.toTypedArray()
 
             rest_api_id = api.rest_api_id
             stage_name = entity.version

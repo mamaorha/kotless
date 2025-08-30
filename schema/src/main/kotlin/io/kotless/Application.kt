@@ -59,8 +59,9 @@ data class Application(val dns: DNS?, val api: API, val events: Events) : Visita
      * @param deployment Deployment resource of ApiGateway
      * @param dynamics Dynamic routes of this ApiGateway served by lambdas
      * @param statics  Static routes of ApiGateway served by static resources
+     * @param allowCors Whether to enable CORS for this API Gateway
      */
-    data class API(val name: String, val deployment: Deployment, val dynamics: Set<DynamicRoute>, val statics: Set<StaticRoute>) : Visitable {
+    data class API(val name: String, val deployment: Deployment, val dynamics: Set<DynamicRoute>, val statics: Set<StaticRoute>, val allowCors: Boolean = false) : Visitable {
 
         /**
          * Deployment definition of ApiGateway. Recreated each redeploy

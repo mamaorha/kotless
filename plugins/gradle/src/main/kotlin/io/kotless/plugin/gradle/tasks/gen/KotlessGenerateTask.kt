@@ -91,7 +91,8 @@ internal open class KotlessGenerateTask : DefaultTask() {
                 name = webapp.deployment.name ?: project.name,
                 deployment = webapp.deployment.toSchema(project.path),
                 dynamics = parsed.routes.dynamics,
-                statics = parsed.routes.statics
+                statics = parsed.routes.statics,
+                allowCors = webapp.cors.enabled
             ),
             events = Application.Events(parsed.events.scheduled)
         )
