@@ -51,8 +51,8 @@ class RuntimePluginExtension : Serializable {
     class RuntimeConfig : Serializable {
         var reflectConfiguration: String? = null
         var flags: List<String>? = null
+        var useBasicBuildArgs: Boolean? = false
         var memoryMb: Int = 1024
-        var useFullFlgas: Boolean = false
         var image: String? = null
         var dockerBuildDirOverride: String? = null
         var dockerVolumesBind: Map<String, String>? = null
@@ -64,7 +64,7 @@ class RuntimePluginExtension : Serializable {
             return if (projectFlags == null) {
                 GraalSettings.FULL_GRAAL_VM_FLAGS
             } else {
-                projectFlags + if (useFullFlgas) GraalSettings.FULL_GRAAL_VM_FLAGS else GraalSettings.BASE_GRAAL_FLAGS
+                projectFlags + if (useBasicBuildArgs == true) GraalSettings.BASE_GRAAL_FLAGS else GraalSettings.FULL_GRAAL_VM_FLAGS
             }
         }
 

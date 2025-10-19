@@ -53,6 +53,7 @@ object KotlessRuntimeTasks {
             config {
                 image = "ghcr.io/graalvm/graalvm-community:21"
                 flags = kotless.webapp.graal.buildArgs
+                useBasicBuildArgs = kotless.webapp.graal.useBasicBuildArgs
                 memoryMb = kotless.webapp.lambda.memoryMb
 
                 if (kotless.config.dsl.typeOrDefault == DSLType.SpringBoot) {

@@ -74,6 +74,13 @@ class Webapp(project: Project) : Serializable {
         /** the given packages will be registered for reflection (to work with json serialize/deserialize).  */
         var modelPackages: List<String>? = null
 
+        /**
+         * if provided as true will only use the BASE_GRAAL_FLAGS otherwise uses FULL_GRAAL_VM_FLAGS
+         * BASE_GRAAL_FLAGS = "--enable-url-protocols=https", "-Djava.net.preferIPv4Stack=true", "--no-server", "-jar"
+         * FULL_GRAAL_VM_FLAGS = "-H:+UnlockExperimentalVMOptions", "-H:+ReportExceptionStackTraces", "-H:+ReportUnsupportedElementsAtRuntime", "-H:+AllowIncompleteClasspath", "-H:ReflectionConfigurationFiles=/working/build/$DEFAULT_REFLECT_FILE_NAME", "--initialize-at-build-time=io.ktor,kotlinx,kotlin,org.apache.logging.log4j,org.apache.logging.slf4j,org.apache.log4j" + BASE_GRAAL_FLAGS
+        */
+        var useBasicBuildArgs: Boolean? = false
+
         /** will add the following as build args.  */
         var buildArgs: List<String>? = null
 
