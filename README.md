@@ -9,7 +9,7 @@ Its focus lies in reducing the routine of serverless deployment creation by gene
 from the code of the application itself.
 
 So, simply speaking, Kotless gives you one magic button to deploy your Web application as a
-serverless application on AWS and Azure!
+serverless application on AWS!
 
 Kotless consists of two main parts:
 
@@ -18,13 +18,12 @@ Kotless consists of two main parts:
       standard Spring syntax and Kotless will generate deployment.
 * Kotless Gradle Plugin provides a way of deploying serverless application. For that, it:
     * performs the tasks of generating Terraform code from the application code and, subsequently,
-      deploying it to AWS or Azure;
+      deploying it to AWS;
     * runs application locally, emulates the AWS environment (if necessary) and provides the
       possibility for IDE debugging.
 
 One of the key features of Kotless is its ability to embed into existing applications. Kotless makes
-super easy deployment of existing Spring applications to AWS and Microsoft Azure serverless
-platforms.
+super easy deployment of existing Spring applications to AWS serverless platform.
 
 ## Getting started
 
@@ -91,12 +90,10 @@ repositories {
 dependencies {
     implementation("io.kotless", "kotless-lang", "0.3.4")
     implementation("io.kotless", "kotless-lang-aws", "0.3.4")
-//    if you want to deploy to Microsoft Azure, just replace -aws with -azure    
 
     //for Spring Boot (Note, that `spring-boot-lang` depends on Spring Boot version 3.2.0)
     //implementation("io.kotless", "spring-boot-lang", "0.3.4")
     //implementation("io.kotless", "spring-boot-lang-aws", "0.3.4")
-    //implementation("io.kotless", "spring-boot-lang-azure", "0.3.4")
 }
 ```
 
@@ -109,8 +106,6 @@ This gives you access to DSL interfaces in your code and sets up a Lambda dispat
 application.
 
 ### Deploying to the cloud
-
-Depending on a use case, you may want to deploy application either in an AWS or Microsoft Azure.
 
 Note, that if you even don't have a cloud account, you can still use Kotless locally to run and
 debug your application -- just use `local` Gradle task.
@@ -152,46 +147,6 @@ Here we set up the config of Kotless itself:
 Then we set up a specific application to deploy:
 
 * Route53 alias for the resulting application (you need to pre-create an ACM certificate for the DNS
-  record).
-
-And that's the whole setup!
-
-#### Deploying to Azure
-
-Deployment to Microsoft Azure is also pretty straightforward and simple:
-
-```kotlin
-kotless {
-    config {
-        azure {
-            storage {
-                storageAccount = "your-storage-account"
-                container = "container-which-kotless-would-use"
-            }
-
-            terraform {
-                backend {
-                    resourceGroup = "your-resource-group"
-                }
-            }
-        }
-    }
-
-    webapp {
-        dns("kotless", "example.com")
-    }
-}
-
-```
-
-Here we set up the config of Kotless itself:
-
-* the storage, which will be used to store lambdas and configs;
-* Terraform configuration with the name of the profile to access Azure.
-
-Then we set up a specific application to deploy:
-
-* Azure DNS alias for the resulting application (you need to pre-create certificate for the DNS
   record).
 
 And that's the whole setup!
@@ -289,8 +244,6 @@ Including, but not limited to:
 Kotless is in active development, so we are currently working on extending this list with such
 features as:
 
-* Support of other clouds &mdash; Kotless is based on a cloud-agnostic schema, so we are working on
-  support of other clouds.
 * Support of multiplatform applications &mdash; Kotless will not use any platform-specific libraries
   to give you a choice of a Lambda runtime (JVM/JS/Native).
 * Versioned deployment &mdash; Kotless will be able to deploy several versions of the application

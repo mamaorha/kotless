@@ -2,7 +2,6 @@ package io.kotless.parser.processor.config
 
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler
 import io.kotless.InternalAPI
-import io.kotless.dsl.cloud.azure.AzureRequestHandler
 import io.kotless.parser.processor.ProcessorContext
 import io.kotless.parser.processor.SubTypesProcessor
 import io.kotless.parser.utils.errors.require
@@ -16,7 +15,7 @@ import org.jetbrains.kotlin.resolve.BindingContext
 object EntrypointProcessor : SubTypesProcessor<EntrypointProcessor.Output>() {
     data class Output(val entrypoint: Lambda.Entrypoint)
 
-    override val klasses = setOf(RequestStreamHandler::class, AzureRequestHandler::class)
+    override val klasses = setOf(RequestStreamHandler::class)
 
     override fun mayRun(context: ProcessorContext) = true
 
@@ -30,20 +29,17 @@ object EntrypointProcessor : SubTypesProcessor<EntrypointProcessor.Output>() {
             entrypoint.add(klass.makeLambdaEntrypoint(binding))
         }
 
-        require(entrypoint.size != 0) { "There should be a class or object inherited from ${RequestStreamHandler::class} or KotlessAWS in your app" }
-        require(entrypoint.size == 1) { "There should be only one class or object inherited from ${RequestStreamHandler::class} or KotlessAWS in your app" }
+        require(entrypoint.size != 0) { "There should be a class or object inherited from ${RequestStreamHandler::class} in your app" }
+        require(entrypoint.size == 1) { "There should be only one class or object inherited from ${RequestStreamHandler::class} in your app" }
 
         return entrypoint.first()
     }
 
     private fun KtClassOrObject.makeLambdaEntrypoint(binding: BindingContext): Lambda.Entrypoint {
-        require(this, fqName != null) { "Anonymous class cannot be inherited from RequestStreamHandler or Kotless class" }
+        require(this, fqName != null) { "Anonymous class cannot be inherited from RequestStreamHandler" }
         if (this.isSubtypeOf(RequestStreamHandler::class, binding)) {
             return Lambda.Entrypoint("${fqName!!.asString()}::${RequestStreamHandler::handleRequest.name}")
         }
-        if (this.isSubtypeOf(AzureRequestHandler::class, binding)) {
-            return Lambda.Entrypoint("${fqName!!.asString()}.run")
-        }
-        error("Entry point should be inherited from ${RequestStreamHandler::class} or ${AzureRequestHandler::class}")
+        error("Entry point should be inherited from ${RequestStreamHandler::class}")
     }
 }
