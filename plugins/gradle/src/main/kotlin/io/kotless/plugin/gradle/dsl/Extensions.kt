@@ -51,4 +51,12 @@ class Extensions : Serializable {
     }
 
     internal val local = Local()
+
+    /**
+     * Configuration of local Kotless execution.
+     */
+    @KotlessDSLTag
+    fun local(configure: Local.() -> Unit) {
+        local.configure()
+    }
 }

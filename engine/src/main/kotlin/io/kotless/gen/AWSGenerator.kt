@@ -2,6 +2,7 @@ package io.kotless.gen
 
 import io.kotless.*
 import io.kotless.gen.factory.aws.apigateway.*
+import io.kotless.gen.factory.aws.event.SNSEventsFactory
 import io.kotless.gen.factory.aws.event.ScheduledEventsFactory
 import io.kotless.gen.factory.aws.info.InfoFactory
 import io.kotless.gen.factory.aws.infra.ProvidersFactory
@@ -31,6 +32,7 @@ object AWSGenerator {
         Lambda::class to setOf(LambdaFactory),
 
         Application.Events.Scheduled::class to setOf(ScheduledEventsFactory),
+        Application.Events.SNS::class to setOf(SNSEventsFactory),
 
         Application.API.StaticRoute::class to setOf(StaticRouteFactory),
         Application.API.DynamicRoute::class to setOf(DynamicRouteFactory)

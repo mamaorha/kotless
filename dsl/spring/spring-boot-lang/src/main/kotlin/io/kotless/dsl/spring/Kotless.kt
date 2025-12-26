@@ -7,6 +7,8 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler
 import io.kotless.InternalAPI
 import io.kotless.dsl.cloud.aws.CloudWatch
+import io.kotless.dsl.cloud.aws.SNSEventData
+import io.kotless.dsl.spring.events.SnsDispatcher
 import io.kotless.dsl.utils.JSON
 import org.slf4j.LoggerFactory
 import java.io.InputStream
@@ -50,8 +52,20 @@ abstract class Kotless : RequestStreamHandler {
             }
         }
 
+        // Check if this is an SNS event
+        if (json.contains("\"EventSource\":\"aws:sns\"") || json.contains("\"Records\":[{\"EventSource\":\"aws:sns\"")) {
+            logger.debug("Request is SNS Event")
+            try {
+                val snsEvent = JSON.parse(SNSEventData.serializer(), json)
+                SnsDispatcher.process(snsEvent)
+                return
+            } catch (e: Exception) {
+                logger.warn("Failed to parse SNS event: ${e.message}", e)
+            }
+        }
+
         logger.debug("Request is HTTP Event")
 
-        handler?.proxyStream(json.byteInputStream(), output, context)
+        handler.proxyStream(json.byteInputStream(), output, context)
     }
 }

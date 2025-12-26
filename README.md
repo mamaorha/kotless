@@ -89,7 +89,6 @@ repositories {
 
 dependencies {
     implementation("io.kotless", "kotless-lang", "0.3.4")
-    implementation("io.kotless", "kotless-lang-aws", "0.3.4")
 
     //for Spring Boot (Note, that `spring-boot-lang` depends on Spring Boot version 3.2.0)
     //implementation("io.kotless", "spring-boot-lang", "0.3.4")
@@ -167,6 +166,72 @@ object Pages {
 }
 ```
 
+### Consuming SNS messages
+
+Kotless makes it easy to consume messages from AWS SNS topics. Simply annotate a function with `@SNSEvent` and Kotless will automatically:
+
+* Create the SNS topic (if it doesn't exist)
+* Create a Lambda function for your handler
+* Set up a subscription between the topic and Lambda
+* Configure the necessary permissions
+
+Here's an example of how to consume SNS messages:
+
+```kotlin
+import io.kotless.dsl.cloud.aws.SNSEvent
+import io.kotless.dsl.cloud.aws.SNSEventData.SNSRecord
+
+object NotificationHandler {
+    @SNSEvent(topicName = "user-notifications")
+    fun handleNotification(record: SNSRecord) {
+        val message = record.sns.message
+        val subject = record.sns.subject
+        val topicArn = record.sns.topicArn
+        
+        println("Received notification from $topicArn")
+        println("Subject: $subject")
+        println("Message: $message")
+        
+        // Access message attributes if present
+        record.sns.messageAttributes?.forEach { (key, attribute) ->
+            println("Attribute $key: ${attribute.value}")
+        }
+        
+        // Your business logic here
+    }
+    
+    // You can also specify a different region for the topic
+    @SNSEvent(topicName = "cross-region-notifications", region = "us-east-1")
+    fun handleCrossRegionNotification(record: SNSRecord) {
+        // Handle messages from a topic in a different region
+
+        val message = record.sns.message
+        val subject = record.sns.subject
+        val topicArn = record.sns.topicArn
+
+        println("Received notification from $topicArn")
+        println("Subject: $subject")
+        println("Message: $message")
+
+        // Access message attributes if present
+        record.sns.messageAttributes?.forEach { (key, attribute) ->
+            println("Attribute $key: ${attribute.value}")
+        }
+
+        // Your business logic here
+    }
+}
+```
+
+**Key points:**
+
+* The `@SNSEvent` annotation requires a `topicName` parameter
+* The `region` parameter is optional and defaults to your configured AWS region
+* Your handler function should accept `SNSEventData` as a parameter
+* `SNSRecord` contains record data with an `sns` message
+* Each message contains fields like `message`, `subject`, `topicArn`, `timestamp`, and optional `messageAttributes`
+* If your handler needs additional AWS permissions (e.g., to write to DynamoDB), use the Permissions API annotations (see [Advanced features](#advanced-features))
+
 ## Local start
 
 Kotless-based applications can start locally as an HTTP server. This functionality is supported by
@@ -239,6 +304,7 @@ Including, but not limited to:
 * **Static resources** &mdash; Kotless will deploy static resources to S3 and set up CDN for them.
   It may greatly improve the response time of your application and is supported by all DSLs.
 * **Scheduled events** &mdash; Kotless sets up timers to execute `@Scheduled` jobs on schedule;
+* **SNS consumers** &mdash; Kotless automatically creates SNS topics, Lambda functions, and subscriptions for functions annotated with `@SNSEvent`. The infrastructure is generated automatically, and you only need to annotate your handler function;
 * **Terraform extensions** &mdash; Kotless-generated code can be extended by custom Terraform code;
 
 Kotless is in active development, so we are currently working on extending this list with such
@@ -250,8 +316,8 @@ features as:
   and maintain one of them as active.
 * Implicit permissions granting &mdash; Kotless will be able to deduce permissions from AWS SDK
   function calls.
-* Events handlers support &mdash; Kotless will generate events subscriptions for properly annotated
-  events handlers.
+* Additional event handlers support &mdash; Kotless will generate events subscriptions for other AWS
+  event sources (currently SNS is supported).
 
 ## Examples
 

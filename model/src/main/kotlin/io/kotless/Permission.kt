@@ -35,6 +35,12 @@ enum class AwsResource(
         read = setOf("Get*", "List*", "ReceiveMessage"),
         write = setOf("DeleteMessage", "PurgeQueue", "SendMessage")
     ),
+    SNSTopic(
+        "sns",
+        glob = { region, account -> "arn:aws:sns:$region:$account" },
+        read = setOf("GetTopicAttributes", "ListTopics", "ListSubscriptionsByTopic", "Subscribe", "ConfirmSubscription", "Unsubscribe", "ListSubscriptions"),
+        write = setOf("Publish", "CreateTopic", "DeleteTopic", "SetTopicAttributes", "AddPermission", "RemovePermission", "TagResource", "UntagResource")
+    ),
     Cognito(
         "cognito-idp",
         glob = { region, account -> "arn:aws:cognito-idp:$region:$account" },

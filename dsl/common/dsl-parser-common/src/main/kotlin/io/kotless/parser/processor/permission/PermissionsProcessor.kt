@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
 
 object PermissionsProcessor {
     private val PERMISSION_ANNOTATIONS_CLASSES =
-        setOf(S3Bucket::class, SSMParameters::class, DynamoDBTable::class, SQSQueue::class, Cognito::class, SecretManager::class)
+        setOf(S3Bucket::class, SSMParameters::class, DynamoDBTable::class, SQSQueue::class, SNSTopic::class, Cognito::class, SecretManager::class)
 
     private val permissionsAnnotationProcessor = object : AnnotationProcessor<Unit>() {
         override val annotations: Set<KClass<out Annotation>> = PERMISSION_ANNOTATIONS_CLASSES
@@ -76,6 +76,13 @@ object PermissionsProcessor {
                         permissions.add(AWSPermission(AwsResource.SQSQueue, level, setOf(id)))
                     }
 
+                    SNSTopic::class -> {
+                        val id = annotation.getValue(context, SNSTopic::topicArn)!!
+                        val level = annotation.getEnumValue(context, SNSTopic::level)!!
+                        val region = annotation.getValue(context, SNSTopic::region) ?: ""
+                        permissions.add(AWSPermission(AwsResource.SNSTopic, level, setOf(id), region.takeIf { it.isNotEmpty() }))
+                    }
+
                     Cognito::class -> {
                         val id = annotation.getValue(context, Cognito::userPoolsId)!!
                         val level = annotation.getEnumValue(context, Cognito::level)!!
@@ -123,6 +130,13 @@ object PermissionsProcessor {
                         val id = annotation.queueName
                         val level = annotation.level
                         permissions.add(AWSPermission(AwsResource.SQSQueue, level, setOf(id)))
+                    }
+
+                    is SNSTopic -> {
+                        val id = annotation.topicArn
+                        val level = annotation.level
+                        val region = annotation.region.takeIf { it.isNotEmpty() }
+                        permissions.add(AWSPermission(AwsResource.SNSTopic, level, setOf(id), region))
                     }
 
                     is Cognito -> {

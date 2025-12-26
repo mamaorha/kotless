@@ -22,6 +22,11 @@ internal object KotlessDeployTasks {
         with(tasks) {
             val generate = myCreate<KotlessGenerateTask>("generate")
 
+            // Make generate depend on kotlessClassOverride if it exists (for non-GraalVM builds)
+            tasks.findByName("kotlessClassOverride")?.let { kotlessClassOverride ->
+                generate.dependsOn(kotlessClassOverride)
+            }
+
             val init = myCreate<TerraformOperationTask>("initialize") {
                 group = Groups.`kotless setup`
 

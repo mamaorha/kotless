@@ -94,7 +94,7 @@ internal open class KotlessGenerateTask : DefaultTask() {
                 statics = parsed.routes.statics,
                 allowCors = webapp.cors.enabled
             ),
-            events = Application.Events(parsed.events.scheduled)
+            events = Application.Events(parsed.events.scheduled, parsed.events.sns)
         )
 
         return Schema(

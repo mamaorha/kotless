@@ -4,7 +4,8 @@ import io.kotless.plugin.gradle.KotlessDeployTasks.setupDeployTasks
 import io.kotless.plugin.gradle.KotlessLocalTasks.setupLocalTasks
 import io.kotless.plugin.gradle.KotlessRuntimeTasks.setupGraal
 import io.kotless.plugin.gradle.dsl.*
-import io.kotless.plugin.gradle.dsl.kotless
+import io.kotless.plugin.gradle.graal.utils.sourceSet
+import io.kotless.plugin.gradle.tasks.gen.KotlessClassOverrideTask
 import io.kotless.plugin.gradle.tasks.terraform.TerraformDownloadTask
 import io.kotless.plugin.gradle.utils.gradle.*
 import io.kotless.resource.Lambda
@@ -43,6 +44,15 @@ internal class KotlessPlugin : Plugin<Project> {
                         setupGraal()
                     } else {
                         convention.getPlugin<ApplicationPluginConvention>().mainClassName = kotless.config.dsl.typeOrDefault.descriptor.localEntryPoint
+
+                        // Setup SNS consumers generation for non-GraalVM builds
+                        val kotlessClassOverride = myCreate<KotlessClassOverrideTask>("kotlessClassOverride")
+
+                        // Make compileKotlin depend on kotlessClassOverride
+                        tasks.getByName("compileKotlin").dependsOn(kotlessClassOverride)
+
+                        // Add override directory to source set
+                        mySourceSets.getByName("main").sourceSet.srcDir(kotlessClassOverride.kotlinOverridePath)
                     }
 
                     setupDeployTasks(download)

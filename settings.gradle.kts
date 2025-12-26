@@ -9,8 +9,6 @@ include(":dsl:common:dsl-common")
 include(":dsl:common:cloud:dsl-common-aws")
 include(":dsl:common:dsl-parser-common")
 
-include(":dsl:kotless:cloud:kotless-lang-aws")
-
 include(":dsl:spring:spring-boot-lang")
 include(":dsl:spring:spring-boot-lang-local")
 include(":dsl:spring:spring-lang-parser")
