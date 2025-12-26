@@ -13,8 +13,6 @@ dependencies {
     implementation("org.jetbrains.kotlin", "kotlin-gradle-plugin", Versions.kotlin)
 
     //Parsing
-    implementation(project(":dsl:kotless:kotless-lang-parser"))
-    implementation(project(":dsl:ktor:ktor-lang-parser"))
     implementation(project(":dsl:spring:spring-lang-parser"))
     implementation(project(":engine"))
 

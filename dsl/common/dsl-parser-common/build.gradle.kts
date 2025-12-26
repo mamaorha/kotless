@@ -12,8 +12,8 @@ dependencies {
     api(project(":dsl:common:dsl-common"))
     api(project(":dsl:common:cloud:dsl-common-aws"))
     api(project(":dsl:common:cloud:dsl-common-azure"))
+    api("org.reflections:reflections:0.10.2")
 
-    implementation(project(":dsl:kotless:kotless-lang"))
     implementation(project(":dsl:kotless:cloud:kotless-lang-aws"))
     implementation(project(":dsl:kotless:cloud:kotless-lang-azure"))
 }

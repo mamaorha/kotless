@@ -14,10 +14,6 @@ serverless application on AWS and Azure!
 Kotless consists of two main parts:
 
 * DSL provides a way of defining serverless applications. There are three DSLs supported:
-    * **Kotless DSL** &mdash; Kotless own DSL that provides annotations to declare routing,
-      scheduled events, etc.
-    * **Ktor** &mdash; Ktor engine that is introspected by Kotless. Use standard Ktor syntax and
-      Kotless will generate deployment.
     * **Spring Boot** &mdash; Spring Boot serverless container that is introspected by Kotless. Use
       standard Spring syntax and Kotless will generate deployment.
 * Kotless Gradle Plugin provides a way of deploying serverless application. For that, it:
@@ -27,7 +23,7 @@ Kotless consists of two main parts:
       possibility for IDE debugging.
 
 One of the key features of Kotless is its ability to embed into existing applications. Kotless makes
-super easy deployment of existing Spring and Ktor applications to AWS and Microsoft Azure serverless
+super easy deployment of existing Spring applications to AWS and Microsoft Azure serverless
 platforms.
 
 ## Getting started
@@ -79,11 +75,11 @@ plugins {
     //Version of Kotlin should be 1.9.21+
     kotlin("jvm") version "1.9.21" apply true
 
-    id("io.kotless") version "0.3.3" apply true
+    id("io.kotless") version "0.3.4" apply true
 }
 ```
 
-Secondly, add Kotless DSL (or Ktor, or Spring Boot) as a library to your application:
+Secondly, add Spring Boot DSL as a library to your application:
 
 ```kotlin
 repositories {
@@ -93,25 +89,18 @@ repositories {
 }
 
 dependencies {
-    implementation("io.kotless", "kotless-lang", "0.3.3")
-    implementation("io.kotless", "kotless-lang-aws", "0.3.3")
+    implementation("io.kotless", "kotless-lang", "0.3.4")
+    implementation("io.kotless", "kotless-lang-aws", "0.3.4")
 //    if you want to deploy to Microsoft Azure, just replace -aws with -azure    
-//    implementation("io.kotless", "ktor-lang-azure", "0.3.3")
 
-
-    //or for Ktor (Note, that `ktor-lang` depends on Ktor version 1.5.0)
-    //implementation("io.kotless", "ktor-lang", "0.3.3")
-    //implementation("io.kotless", "ktor-lang-aws", "0.3.3")
-    //implementation("io.kotless", "ktor-lang-azure", "0.3.3")
-
-    //or for Spring Boot (Note, that `spring-boot-lang` depends on Spring Boot version 3.2.0)
-    //implementation("io.kotless", "spring-boot-lang", "0.3.3")
-    //implementation("io.kotless", "spring-boot-lang-aws", "0.3.3")
-    //implementation("io.kotless", "spring-boot-lang-azure", "0.3.3")
+    //for Spring Boot (Note, that `spring-boot-lang` depends on Spring Boot version 3.2.0)
+    //implementation("io.kotless", "spring-boot-lang", "0.3.4")
+    //implementation("io.kotless", "spring-boot-lang-aws", "0.3.4")
+    //implementation("io.kotless", "spring-boot-lang-azure", "0.3.4")
 }
 ```
 
-*Please note that if you use Ktor or Spring Boot you will need to replace existing in your project
+*Please note that if you use Spring Boot you will need to replace existing in your project
 dependency with a special Kotless `*-lang` dependency. Also, after that you will need to align
 version of dependent libraries (like Spring Security) with version bundled in `*-lang`
 (see this [paragraph](#integration-with-existing-applications))*
@@ -209,29 +198,7 @@ And that's the whole setup!
 
 ### Creating application
 
-Now you can create your first serverless application with Kotless DSL:
-
-```kotlin
-@Get("/")
-fun main() = "Hello world!"
-```
-
-Or with Ktor:
-
-```kotlin
-class Server : Kotless() {
-    override fun prepare(app: Application) {
-        app.routing {
-            get("/") {
-                call.respondText { "Hello World!" }
-            }
-        }
-    }
-}
-```
-
-Or with Spring Boot:
-
+Now you can create your first serverless application with Spring Boot DSL:
 ```kotlin
 @SpringBootApplication
 open class Application : Kotless() {
@@ -289,18 +256,12 @@ application locally from your IDE.
 
 ## Integration with existing applications
 
-Kotless is able to deploy existing Spring Boot or Ktor application to AWS serverless platform. To do
+Kotless is able to deploy existing Spring Boot application to AWS serverless platform. To do
 it, you'll need to set up a plugin and replace existing dependency with the appropriate Kotless DSL.
-
-For **Ktor**, you should replace existing engine (
-e.g. `implementation("io.ktor", "ktor-server-netty", "1.5.0")`)
-with `implementation("io.kotless", "ktor-lang", "0.1.6")`. Note that this dependency bundles Ktor of
-version
-`1.5.0`, so you may need to upgrade other Ktor libraries (like `ktor-html-builder`) to this version.
 
 For **Spring Boot** you should replace the starter you use (
 e.g. `implementation("org.springframework.boot", "spring-boot-starter-web", "3.2.0)`)
-with `implementation("io.kotless", "spring-boot-lang", "0.3.3")`. Note that this dependency bundles
+with `implementation("io.kotless", "spring-boot-lang", "0.3.4")`. Note that this dependency bundles
 Spring Boot of version `3.2.0`, so you also may need to upgrade other Spring Boot libraries to this
 version.
 
@@ -343,29 +304,7 @@ features as:
 
 Any explanation becomes much better with a proper example.
 
-In the repository's `examples` folder, you can find example projects built with Kotless DSL:
-
-* `kotless/site` &mdash; a site about Kotless written with Kotless
-  DSL ([site.kotless.io](https://site.kotless.io)). This example demonstrates `@StaticGet`
-  and `@Get` (static and dynamic routes) usage, as well as Link API.
-* `kotless/shortener` &mdash; a simple URL shortener written with Kotless
-  DSL ([short.kotless.io](https://short.kotless.io)). This example demonstrates `@Get` (
-  dynamic routes), `@Scheduled` (scheduled lambdas), Permissions API (for DynamoDB access), and
-  Terraform extensions.
-
-Similar examples exist for Ktor:
-
-* `ktor/site` &mdash; a site about Kotless written with
-  Ktor ([ktor.site.kotless.io](https://ktor.site.kotless.io)). This example
-  demonstrates `static {...}`
-  and `routing {...}` usage.
-* `ktor/shortener` &mdash; a simple URL shortener written with
-  Ktor ([ktor.short.kotless.io](https://ktor.short.kotless.io)). This example
-  demonstrates `routing { ... }` (dynamic routes), Permissions API (for DynamoDB access), and
-  Terraform extensions.
-
-And for Spring Boot:
-
+In the repository's `examples` folder, you can find example projects built with Spring Boot DSL:
 * `spring/site` &mdash; a site about Kotless written with Spring
   Boot ([spring.site.kotless.io](https://spring.site.kotless.io)). This example demonstrates usage
   of statics and `@RestController`.

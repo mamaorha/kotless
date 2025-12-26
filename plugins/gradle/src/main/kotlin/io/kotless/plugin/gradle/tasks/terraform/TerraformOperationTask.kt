@@ -2,13 +2,13 @@ package io.kotless.plugin.gradle.tasks.terraform
 
 import io.kotless.plugin.gradle.dsl.kotless
 import io.kotless.plugin.gradle.utils.CommandLine
-import io.ktor.util.*
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.*
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.*
+import kotlin.io.path.extension
 import kotlin.io.path.isRegularFile
 
 

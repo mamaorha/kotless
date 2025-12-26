@@ -16,6 +16,6 @@ object GraalSettings {
         "-H:+ReportUnsupportedElementsAtRuntime",
         "-H:+AllowIncompleteClasspath",
         "-H:ReflectionConfigurationFiles=/working/build/$DEFAULT_REFLECT_FILE_NAME",
-        "--initialize-at-build-time=io.ktor,kotlinx,kotlin,org.apache.logging.log4j,org.apache.logging.slf4j,org.apache.log4j"
+        "--initialize-at-build-time=kotlinx,kotlin,org.apache.logging.log4j,org.apache.logging.slf4j,org.apache.log4j"
     ) + BASE_GRAAL_FLAGS
 }

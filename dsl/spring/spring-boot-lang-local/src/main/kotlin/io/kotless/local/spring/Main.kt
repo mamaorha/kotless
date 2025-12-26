@@ -4,13 +4,12 @@ import io.kotless.Constants
 import io.kotless.InternalAPI
 import io.kotless.dsl.spring.Kotless
 import org.springframework.boot.SpringApplication
-import java.util.Scanner
 import kotlin.reflect.full.primaryConstructor
 
 @OptIn(InternalAPI::class)
 fun main() {
     val port = System.getenv(Constants.Local.serverPort).toInt()
-    val classToStart = System.getenv(Constants.Local.KtorOrSpring.classToStart)
+    val classToStart = System.getenv(Constants.Local.Spring.classToStart)
 
     val ktClass = ::main::class.java.classLoader.loadClass(classToStart).kotlin
     val instance = (ktClass.primaryConstructor?.call() ?: ktClass.objectInstance) as? Kotless

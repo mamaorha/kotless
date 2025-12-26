@@ -20,8 +20,8 @@ import java.io.File
 
 object KotlessRuntimeTasks {
     fun Project.setupGraal() {
-        if (kotless.config.dsl.typeOrDefault != DSLType.Ktor && kotless.config.dsl.typeOrDefault != DSLType.SpringBoot) {
-            project.logger.warn("GraalVM Runtime can be used only with Ktor DSL for now")
+        if (kotless.config.dsl.typeOrDefault != DSLType.SpringBoot) {
+            project.logger.warn("GraalVM Runtime can be used only with SpringBoot DSL for now")
             return
         }
 

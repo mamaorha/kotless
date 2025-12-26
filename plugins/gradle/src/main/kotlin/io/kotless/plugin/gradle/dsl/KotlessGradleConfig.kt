@@ -49,13 +49,13 @@ class KotlessGradleConfig(project: Project) : Serializable {
             require(types.isNotEmpty()) {
                 """
                 |Kotless was unable to determine DSL type of application.
-                |Either dependency with one of the DSLs (`kotless-lang`, `ktor-lang`, `spring-boot-lang`) should be added, or DSL should be specified manually.
+                |Either dependency with one of the DSLs (`spring-boot-lang`) should be added, or DSL should be specified manually.
                 |""".trimMargin()
             }
             require(types.size <= 1) {
                 """
                 |Kotless was unable to determine DSL type of application. 
-                |There was more than one DSL dependency (of type `lang`, `ktor-lang`, `spring-boot-lang`) should be added, or DSL should be specified manually.
+                |There was more than one DSL dependency (of type `spring-boot-lang`) should be added, or DSL should be specified manually.
                 |""".trimMargin()
             }
 
@@ -71,8 +71,7 @@ class KotlessGradleConfig(project: Project) : Serializable {
         /** Statics root correctly resolved for DSL */
         internal val resolvedStaticsRoot
             get() = when (typeOrDefault) {
-                DSLType.Ktor -> workingRoot
-                DSLType.SpringBoot, DSLType.Kotless -> staticsRoot
+                DSLType.SpringBoot -> staticsRoot
             }
 
         /** Working directory of current project */
@@ -82,17 +81,10 @@ class KotlessGradleConfig(project: Project) : Serializable {
          * Directory Kotless considers as root for Static Resources resolving
          *
          * Will be used for Kotless DSL and SpringBoot to search for static resources.
-         * For Ktor use `staticRootFolder` field in `static`.
          *
          * By default, it is `src/main/resources`
          */
         var staticsRoot: File = project.projectDir.resolve("src/main/resources")
-            set(value) {
-                require(typeOrDefault != DSLType.Ktor) {
-                    "Statics root cannot be reassigned for Ktor from Gradle. Use `staticRootFolder` field in `static` closure of your application."
-                }
-                field = value
-            }
     }
 
     internal val dsl: DSLGradle = DSLGradle(project)
