@@ -20,8 +20,8 @@ import java.io.File
 
 object KotlessRuntimeTasks {
     fun Project.setupGraal() {
-        if (kotless.config.dsl.typeOrDefault != DSLType.Ktor && kotless.config.dsl.typeOrDefault != DSLType.SpringBoot) {
-            project.logger.warn("GraalVM Runtime can be used only with Ktor DSL for now")
+        if (kotless.config.dsl.typeOrDefault != DSLType.SpringBoot) {
+            project.logger.warn("GraalVM Runtime can be used only with SpringBoot DSL for now")
             return
         }
 
@@ -57,7 +57,7 @@ object KotlessRuntimeTasks {
                 memoryMb = kotless.webapp.lambda.memoryMb
 
                 if (kotless.config.dsl.typeOrDefault == DSLType.SpringBoot) {
-                    additionalSources = getAdditionalResources(kotless, mainClass)
+                    additionalSources = getAdditionalResources(project, kotless, mainClass)
                     dockerBuildDirOverride = buildDir.parentFile.parentFile.parent
                     dockerVolumesBind = mapOf(
                         getM2RepoPath(homePath) to "/root/.m2/repository",
@@ -104,9 +104,14 @@ object KotlessRuntimeTasks {
         }
     }
 
-    private fun getAdditionalResources(kotless: KotlessDSL, mainClass: String): List<GenerateAdapter.Source>? {
+    private fun getAdditionalResources(project: Project, kotless: KotlessDSL, mainClass: String): List<GenerateAdapter.Source>? {
         if (kotless.config.dsl.typeOrDefault == DSLType.SpringBoot) {
             return listOf(
+                GenerateAdapter.Source(
+                    filePath = SnsConsumersByTopicSource.filePath,
+                    data = SnsConsumersByTopicSource.data(project),
+                    type = SnsConsumersByTopicSource.type
+                ),
                 GenerateAdapter.Source(
                     filePath = LambdaContainerHandlerSource.filePath,
                     data = LambdaContainerHandlerSource.data,

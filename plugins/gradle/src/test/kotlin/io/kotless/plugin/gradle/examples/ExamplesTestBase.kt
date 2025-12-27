@@ -9,23 +9,12 @@ import java.io.File
 abstract class ExamplesTestBase {
     companion object {
         fun data() = listOf(
-            Arguments.of("kotless", "site"),
-            Arguments.of("kotless", "shortener"),
-
-            Arguments.of("ktor", "site"),
-            Arguments.of("ktor", "shortener"),
-
             Arguments.of("spring", "site"),
             Arguments.of("spring", "shortener")
         )
 
 
         fun dataWithoutGraal() = listOf(
-            Arguments.of("kotless", "site"),
-            Arguments.of("kotless", "shortener"),
-
-            Arguments.of("ktor", "shortener"),
-
             Arguments.of("spring", "site"),
             Arguments.of("spring", "shortener")
         )

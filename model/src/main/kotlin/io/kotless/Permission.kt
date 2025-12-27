@@ -35,6 +35,12 @@ enum class AwsResource(
         read = setOf("Get*", "List*", "ReceiveMessage"),
         write = setOf("DeleteMessage", "PurgeQueue", "SendMessage")
     ),
+    SNSTopic(
+        "sns",
+        glob = { region, account -> "arn:aws:sns:$region:$account" },
+        read = setOf("GetTopicAttributes", "ListTopics", "ListSubscriptionsByTopic", "Subscribe", "ConfirmSubscription", "Unsubscribe", "ListSubscriptions"),
+        write = setOf("Publish", "CreateTopic", "DeleteTopic", "SetTopicAttributes", "AddPermission", "RemovePermission", "TagResource", "UntagResource")
+    ),
     Cognito(
         "cognito-idp",
         glob = { region, account -> "arn:aws:cognito-idp:$region:$account" },
@@ -60,6 +66,12 @@ enum class AwsResource(
             "DescribeMetricFilters"
         ),
         write = setOf("CreateLogGroup", "DeleteLogGroup", "CreateLogStream", "DeleteLogStream", "PutLogEvents", "DeleteMetricFilter", "PutMetricFilter")
+    ),
+    GameLift(
+        "gamelift",
+        glob = { region, account -> "arn:aws:gamelift:$region:$account" },
+        read = setOf("Describe*", "List*", "Get*", "Search*", "ResolveAlias"),
+        write = setOf("Create*", "Update*", "Delete*", "Start*", "Stop*", "Put*", "Claim*", "Accept*", "Request*", "TagResource", "UntagResource")
     );
 
     companion object {
@@ -67,24 +79,6 @@ enum class AwsResource(
         @InternalAPI
         val forLocalStart = setOf(S3, SSM, DynamoDB)
     }
-}
-
-/** Types of supported Azure resources */
-enum class AzureResource(
-    val prefix: String, val read: Set<String>, val write: Set<String>, val readWrite: Set<String>
-) {
-    Resource(
-        "resource",
-        read = setOf("Reader"),
-        write = setOf("Contributor"),
-        readWrite = setOf("Contributor")
-    ),
-    StorageAccount(
-        "storage-account",
-        read = setOf("Reader"),
-        write = setOf("Contributor"),
-        readWrite = setOf("Contributor")
-    );
 }
 
 /** Level of access -- Read/Write/ReadWrite */

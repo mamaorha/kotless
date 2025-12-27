@@ -2,17 +2,20 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
-# 0.3.3 - 2024-06-10
+# 0.3.4 - 2025-12-26
 
-## Changed
-
-* Support lambda VPC
+* Breaking change: you should remove dependency in "kotless-lang-aws" as its no longer part of the project
+* removed ktor & kotless dsl
+* removed azure support
+* support sns
+* support gamelift permission
 
 # 0.3.3 - 2023-12-25
 
 ## Changed
 
 * Support graal for spring-boot
+* Support lambda VPC
 
 # 0.3.1 - 2023-12-16
 

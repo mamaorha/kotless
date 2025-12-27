@@ -30,8 +30,9 @@ data class Application(val dns: DNS?, val api: API, val events: Events) : Visita
      * Events processed by different functions of Webapp
      *
      * @param scheduled scheduled functions of Webapp
+     * @param sns SNS event subscriptions of Webapp
      */
-    data class Events(val scheduled: Set<Scheduled>) : Visitable {
+    data class Events(val scheduled: Set<Scheduled>, val sns: Set<SNS>) : Visitable {
         /**
          * Definition of scheduled event
          *
@@ -43,8 +44,21 @@ data class Application(val dns: DNS?, val api: API, val events: Events) : Visita
             val fqId = "${type.prefix}-$id"
         }
 
+        /**
+         * Definition of SNS event subscription
+         *
+         * @param id unique name of event
+         * @param topicName name of the SNS topic
+         * @param region AWS region where the topic is located
+         * @param lambda function to trigger when SNS message is received
+         */
+        data class SNS(private val id: String, val topicName: String, val region: String, val lambda: TypedStorage.Key<Lambda>) : Visitable {
+            val fqId = "sns-$id"
+        }
+
         override fun visit(visitor: (Any) -> Unit) {
             scheduled.forEach { visitor(it) }
+            sns.forEach { visitor(it) }
             visitor(this)
         }
     }

@@ -9,26 +9,21 @@ Its focus lies in reducing the routine of serverless deployment creation by gene
 from the code of the application itself.
 
 So, simply speaking, Kotless gives you one magic button to deploy your Web application as a
-serverless application on AWS and Azure!
+serverless application on AWS!
 
 Kotless consists of two main parts:
 
 * DSL provides a way of defining serverless applications. There are three DSLs supported:
-    * **Kotless DSL** &mdash; Kotless own DSL that provides annotations to declare routing,
-      scheduled events, etc.
-    * **Ktor** &mdash; Ktor engine that is introspected by Kotless. Use standard Ktor syntax and
-      Kotless will generate deployment.
     * **Spring Boot** &mdash; Spring Boot serverless container that is introspected by Kotless. Use
       standard Spring syntax and Kotless will generate deployment.
 * Kotless Gradle Plugin provides a way of deploying serverless application. For that, it:
     * performs the tasks of generating Terraform code from the application code and, subsequently,
-      deploying it to AWS or Azure;
+      deploying it to AWS;
     * runs application locally, emulates the AWS environment (if necessary) and provides the
       possibility for IDE debugging.
 
 One of the key features of Kotless is its ability to embed into existing applications. Kotless makes
-super easy deployment of existing Spring and Ktor applications to AWS and Microsoft Azure serverless
-platforms.
+super easy deployment of existing Spring applications to AWS serverless platform.
 
 ## Getting started
 
@@ -79,11 +74,11 @@ plugins {
     //Version of Kotlin should be 1.9.21+
     kotlin("jvm") version "1.9.21" apply true
 
-    id("io.kotless") version "0.3.3" apply true
+    id("io.kotless") version "0.3.4" apply true
 }
 ```
 
-Secondly, add Kotless DSL (or Ktor, or Spring Boot) as a library to your application:
+Secondly, add Spring Boot DSL as a library to your application:
 
 ```kotlin
 repositories {
@@ -93,25 +88,15 @@ repositories {
 }
 
 dependencies {
-    implementation("io.kotless", "kotless-lang", "0.3.3")
-    implementation("io.kotless", "kotless-lang-aws", "0.3.3")
-//    if you want to deploy to Microsoft Azure, just replace -aws with -azure    
-//    implementation("io.kotless", "ktor-lang-azure", "0.3.3")
+    implementation("io.kotless", "kotless-lang", "0.3.4")
 
-
-    //or for Ktor (Note, that `ktor-lang` depends on Ktor version 1.5.0)
-    //implementation("io.kotless", "ktor-lang", "0.3.3")
-    //implementation("io.kotless", "ktor-lang-aws", "0.3.3")
-    //implementation("io.kotless", "ktor-lang-azure", "0.3.3")
-
-    //or for Spring Boot (Note, that `spring-boot-lang` depends on Spring Boot version 3.2.0)
-    //implementation("io.kotless", "spring-boot-lang", "0.3.3")
-    //implementation("io.kotless", "spring-boot-lang-aws", "0.3.3")
-    //implementation("io.kotless", "spring-boot-lang-azure", "0.3.3")
+    //for Spring Boot (Note, that `spring-boot-lang` depends on Spring Boot version 3.2.0)
+    //implementation("io.kotless", "spring-boot-lang", "0.3.4")
+    //implementation("io.kotless", "spring-boot-lang-aws", "0.3.4")
 }
 ```
 
-*Please note that if you use Ktor or Spring Boot you will need to replace existing in your project
+*Please note that if you use Spring Boot you will need to replace existing in your project
 dependency with a special Kotless `*-lang` dependency. Also, after that you will need to align
 version of dependent libraries (like Spring Security) with version bundled in `*-lang`
 (see this [paragraph](#integration-with-existing-applications))*
@@ -120,8 +105,6 @@ This gives you access to DSL interfaces in your code and sets up a Lambda dispat
 application.
 
 ### Deploying to the cloud
-
-Depending on a use case, you may want to deploy application either in an AWS or Microsoft Azure.
 
 Note, that if you even don't have a cloud account, you can still use Kotless locally to run and
 debug your application -- just use `local` Gradle task.
@@ -167,71 +150,9 @@ Then we set up a specific application to deploy:
 
 And that's the whole setup!
 
-#### Deploying to Azure
-
-Deployment to Microsoft Azure is also pretty straightforward and simple:
-
-```kotlin
-kotless {
-    config {
-        azure {
-            storage {
-                storageAccount = "your-storage-account"
-                container = "container-which-kotless-would-use"
-            }
-
-            terraform {
-                backend {
-                    resourceGroup = "your-resource-group"
-                }
-            }
-        }
-    }
-
-    webapp {
-        dns("kotless", "example.com")
-    }
-}
-
-```
-
-Here we set up the config of Kotless itself:
-
-* the storage, which will be used to store lambdas and configs;
-* Terraform configuration with the name of the profile to access Azure.
-
-Then we set up a specific application to deploy:
-
-* Azure DNS alias for the resulting application (you need to pre-create certificate for the DNS
-  record).
-
-And that's the whole setup!
-
 ### Creating application
 
-Now you can create your first serverless application with Kotless DSL:
-
-```kotlin
-@Get("/")
-fun main() = "Hello world!"
-```
-
-Or with Ktor:
-
-```kotlin
-class Server : Kotless() {
-    override fun prepare(app: Application) {
-        app.routing {
-            get("/") {
-                call.respondText { "Hello World!" }
-            }
-        }
-    }
-}
-```
-
-Or with Spring Boot:
-
+Now you can create your first serverless application with Spring Boot DSL:
 ```kotlin
 @SpringBootApplication
 open class Application : Kotless() {
@@ -244,6 +165,112 @@ object Pages {
     fun main() = "Hello World!"
 }
 ```
+
+### Consuming SNS messages
+
+Kotless makes it easy to consume messages from AWS SNS topics. Simply annotate a function with `@SNSEvent` and Kotless will automatically:
+
+* Create the SNS topic (if it doesn't exist)
+* Create a Lambda function for your handler
+* Set up a subscription between the topic and Lambda
+* Configure the necessary permissions
+
+Here's an example of how to consume SNS messages:
+
+```kotlin
+import io.kotless.dsl.cloud.aws.SNSEvent
+import io.kotless.dsl.cloud.aws.SNSEventData.SNSRecord
+
+object NotificationHandler {
+    @SNSEvent(topicName = "user-notifications")
+    fun handleNotification(record: SNSRecord) {
+        val message = record.sns.message
+        val subject = record.sns.subject
+        val topicArn = record.sns.topicArn
+        
+        println("Received notification from $topicArn")
+        println("Subject: $subject")
+        println("Message: $message")
+        
+        // Access message attributes if present
+        record.sns.messageAttributes?.forEach { (key, attribute) ->
+            println("Attribute $key: ${attribute.value}")
+        }
+        
+        // Your business logic here
+    }
+    
+    // You can also specify a different region for the topic
+    @SNSEvent(topicName = "cross-region-notifications", region = "us-east-1")
+    fun handleCrossRegionNotification(record: SNSRecord) {
+        // Handle messages from a topic in a different region
+
+        val message = record.sns.message
+        val subject = record.sns.subject
+        val topicArn = record.sns.topicArn
+
+        println("Received notification from $topicArn")
+        println("Subject: $subject")
+        println("Message: $message")
+
+        // Access message attributes if present
+        record.sns.messageAttributes?.forEach { (key, attribute) ->
+            println("Attribute $key: ${attribute.value}")
+        }
+
+        // Your business logic here
+    }
+}
+```
+
+**Key points:**
+
+* The `@SNSEvent` annotation requires a `topicName` parameter
+* The `region` parameter is optional and defaults to your configured AWS region
+* Your handler function should accept `SNSEventData` as a parameter
+* `SNSRecord` contains record data with an `sns` message
+* Each message contains fields like `message`, `subject`, `topicArn`, `timestamp`, and optional `messageAttributes`
+* If your handler needs additional AWS permissions (e.g., to write to DynamoDB), use the Permissions API annotations (see [Advanced features](#advanced-features))
+
+### Using GameLift permissions
+
+Kotless allows you to grant AWS GameLift permissions to your Lambda functions using the `@GameLift` annotation. This annotation can be applied to functions, classes, or properties to automatically configure IAM permissions for GameLift resources.
+
+The `@GameLift` annotation always uses `"*"` as the resource since GameLift matchmaking actions (and many other GameLift actions) don't support resource-level permissions.
+
+Here's an example of how to use GameLift permissions:
+
+```kotlin
+import io.kotless.dsl.cloud.aws.GameLift
+import io.kotless.PermissionLevel
+
+@GameLift(level = PermissionLevel.ReadWrite)
+class MatchmakingService {
+    fun startMatchmaking() {
+        // Your code that calls StartMatchmaking
+        // This class now has permissions for:
+        // - gamelift:StartMatchmaking
+        // - gamelift:StopMatchmaking
+        // - gamelift:AcceptMatch
+    }
+    
+    fun stopMatchmaking() {
+        // Your code that calls StopMatchmaking
+    }
+    
+    fun acceptMatch() {
+        // Your code that calls AcceptMatch
+    }
+}
+```
+
+**Key points:**
+
+* The `@GameLift` annotation only requires a `level` parameter
+* The annotation always uses `"*"` as the resource since GameLift matchmaking actions don't support resource-level permissions
+* The `level` parameter can be `PermissionLevel.Read`, `PermissionLevel.Write`, or `PermissionLevel.ReadWrite`
+* The annotation can be applied to functions, classes, or properties
+* Permissions are automatically granted when your application is deployed
 
 ## Local start
 
@@ -289,18 +316,12 @@ application locally from your IDE.
 
 ## Integration with existing applications
 
-Kotless is able to deploy existing Spring Boot or Ktor application to AWS serverless platform. To do
+Kotless is able to deploy existing Spring Boot application to AWS serverless platform. To do
 it, you'll need to set up a plugin and replace existing dependency with the appropriate Kotless DSL.
-
-For **Ktor**, you should replace existing engine (
-e.g. `implementation("io.ktor", "ktor-server-netty", "1.5.0")`)
-with `implementation("io.kotless", "ktor-lang", "0.1.6")`. Note that this dependency bundles Ktor of
-version
-`1.5.0`, so you may need to upgrade other Ktor libraries (like `ktor-html-builder`) to this version.
 
 For **Spring Boot** you should replace the starter you use (
 e.g. `implementation("org.springframework.boot", "spring-boot-starter-web", "3.2.0)`)
-with `implementation("io.kotless", "spring-boot-lang", "0.3.3")`. Note that this dependency bundles
+with `implementation("io.kotless", "spring-boot-lang", "0.3.4")`. Note that this dependency bundles
 Spring Boot of version `3.2.0`, so you also may need to upgrade other Spring Boot libraries to this
 version.
 
@@ -323,49 +344,26 @@ Including, but not limited to:
 * **Static resources** &mdash; Kotless will deploy static resources to S3 and set up CDN for them.
   It may greatly improve the response time of your application and is supported by all DSLs.
 * **Scheduled events** &mdash; Kotless sets up timers to execute `@Scheduled` jobs on schedule;
+* **SNS consumers** &mdash; Kotless automatically creates SNS topics, Lambda functions, and subscriptions for functions annotated with `@SNSEvent`. The infrastructure is generated automatically, and you only need to annotate your handler function;
 * **Terraform extensions** &mdash; Kotless-generated code can be extended by custom Terraform code;
 
 Kotless is in active development, so we are currently working on extending this list with such
 features as:
 
-* Support of other clouds &mdash; Kotless is based on a cloud-agnostic schema, so we are working on
-  support of other clouds.
 * Support of multiplatform applications &mdash; Kotless will not use any platform-specific libraries
   to give you a choice of a Lambda runtime (JVM/JS/Native).
 * Versioned deployment &mdash; Kotless will be able to deploy several versions of the application
   and maintain one of them as active.
 * Implicit permissions granting &mdash; Kotless will be able to deduce permissions from AWS SDK
   function calls.
-* Events handlers support &mdash; Kotless will generate events subscriptions for properly annotated
-  events handlers.
+* Additional event handlers support &mdash; Kotless will generate events subscriptions for other AWS
+  event sources (currently SNS is supported).
 
 ## Examples
 
 Any explanation becomes much better with a proper example.
 
-In the repository's `examples` folder, you can find example projects built with Kotless DSL:
-
-* `kotless/site` &mdash; a site about Kotless written with Kotless
-  DSL ([site.kotless.io](https://site.kotless.io)). This example demonstrates `@StaticGet`
-  and `@Get` (static and dynamic routes) usage, as well as Link API.
-* `kotless/shortener` &mdash; a simple URL shortener written with Kotless
-  DSL ([short.kotless.io](https://short.kotless.io)). This example demonstrates `@Get` (
-  dynamic routes), `@Scheduled` (scheduled lambdas), Permissions API (for DynamoDB access), and
-  Terraform extensions.
-
-Similar examples exist for Ktor:
-
-* `ktor/site` &mdash; a site about Kotless written with
-  Ktor ([ktor.site.kotless.io](https://ktor.site.kotless.io)). This example
-  demonstrates `static {...}`
-  and `routing {...}` usage.
-* `ktor/shortener` &mdash; a simple URL shortener written with
-  Ktor ([ktor.short.kotless.io](https://ktor.short.kotless.io)). This example
-  demonstrates `routing { ... }` (dynamic routes), Permissions API (for DynamoDB access), and
-  Terraform extensions.
-
-And for Spring Boot:
-
+In the repository's `examples` folder, you can find example projects built with Spring Boot DSL:
 * `spring/site` &mdash; a site about Kotless written with Spring
   Boot ([spring.site.kotless.io](https://spring.site.kotless.io)). This example demonstrates usage
   of statics and `@RestController`.

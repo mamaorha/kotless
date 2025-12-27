@@ -49,13 +49,13 @@ class KotlessGradleConfig(project: Project) : Serializable {
             require(types.isNotEmpty()) {
                 """
                 |Kotless was unable to determine DSL type of application.
-                |Either dependency with one of the DSLs (`kotless-lang`, `ktor-lang`, `spring-boot-lang`) should be added, or DSL should be specified manually.
+                |Either dependency with one of the DSLs (`spring-boot-lang`) should be added, or DSL should be specified manually.
                 |""".trimMargin()
             }
             require(types.size <= 1) {
                 """
                 |Kotless was unable to determine DSL type of application. 
-                |There was more than one DSL dependency (of type `lang`, `ktor-lang`, `spring-boot-lang`) should be added, or DSL should be specified manually.
+                |There was more than one DSL dependency (of type `spring-boot-lang`) should be added, or DSL should be specified manually.
                 |""".trimMargin()
             }
 
@@ -71,8 +71,7 @@ class KotlessGradleConfig(project: Project) : Serializable {
         /** Statics root correctly resolved for DSL */
         internal val resolvedStaticsRoot
             get() = when (typeOrDefault) {
-                DSLType.Ktor -> workingRoot
-                DSLType.SpringBoot, DSLType.Kotless -> staticsRoot
+                DSLType.SpringBoot -> staticsRoot
             }
 
         /** Working directory of current project */
@@ -82,17 +81,10 @@ class KotlessGradleConfig(project: Project) : Serializable {
          * Directory Kotless considers as root for Static Resources resolving
          *
          * Will be used for Kotless DSL and SpringBoot to search for static resources.
-         * For Ktor use `staticRootFolder` field in `static`.
          *
          * By default, it is `src/main/resources`
          */
         var staticsRoot: File = project.projectDir.resolve("src/main/resources")
-            set(value) {
-                require(typeOrDefault != DSLType.Ktor) {
-                    "Statics root cannot be reassigned for Ktor from Gradle. Use `staticRootFolder` field in `static` closure of your application."
-                }
-                field = value
-            }
     }
 
     internal val dsl: DSLGradle = DSLGradle(project)
@@ -108,8 +100,6 @@ class KotlessGradleConfig(project: Project) : Serializable {
         /** Prefix with which all created resources will be prepended */
         var prefix: String = ""
 
-        class Azure : CloudGradle<StorageGradle.AzureBlob, TerraformGradle.Azure>(CloudPlatform.Azure)
-
         class AWS : CloudGradle<StorageGradle.S3, TerraformGradle.AWS>(CloudPlatform.AWS) {
             lateinit var profile: String
             lateinit var region: String
@@ -121,17 +111,9 @@ class KotlessGradleConfig(project: Project) : Serializable {
                 lateinit var bucket: String
                 var region: String? = null
             }
-
-            class AzureBlob : StorageGradle() {
-                lateinit var container: String
-                lateinit var storageAccount: String
-            }
         }
 
-        internal val storage: S = when (type) {
-            CloudPlatform.AWS -> StorageGradle.S3()
-            CloudPlatform.Azure -> StorageGradle.AzureBlob()
-        } as S
+        internal val storage: S = StorageGradle.S3() as S
 
         fun storage(configure: S.() -> Unit) {
             storage.configure()
@@ -144,8 +126,6 @@ class KotlessGradleConfig(project: Project) : Serializable {
         ) : Serializable {
 
             class AWS(backend: BackendGradle.AWS, provider: ProviderGradle.AWS) : TerraformGradle<BackendGradle.AWS, ProviderGradle.AWS>(backend, provider)
-            class Azure(backend: BackendGradle.Azure, provider: ProviderGradle.Azure) :
-                TerraformGradle<BackendGradle.Azure, ProviderGradle.Azure>(backend, provider)
 
             /**
              * Version of Terraform to use.
@@ -153,7 +133,7 @@ class KotlessGradleConfig(project: Project) : Serializable {
              */
             var version: String = "1.8.2"
 
-            sealed class BackendGradle<S : StorageGradle> : Serializable {
+                sealed class BackendGradle<S : StorageGradle> : Serializable {
                 @KotlessDSLTag
                 class AWS : BackendGradle<StorageGradle.S3>() {
                     internal var s3: StorageGradle.S3? = null
@@ -169,23 +149,6 @@ class KotlessGradleConfig(project: Project) : Serializable {
                     var key: String = "kotless-state/state.tfstate"
 
                     var profile: String? = null
-                }
-
-                @KotlessDSLTag
-                class Azure : BackendGradle<StorageGradle.AzureBlob>() {
-                    internal var blob: StorageGradle.AzureBlob? = null
-
-                    fun blob(configure: StorageGradle.AzureBlob.() -> Unit) {
-                        blob = StorageGradle.AzureBlob().also(configure)
-                    }
-
-                    /**
-                     * Path in a bucket to store Terraform state
-                     * By default it is `kotless-state/state.tfstate`
-                     */
-                    var key: String = "kotless-state/state.tfstate"
-
-                    lateinit var resourceGroup: String
                 }
             }
 
@@ -205,11 +168,6 @@ class KotlessGradleConfig(project: Project) : Serializable {
 
                     var region: String? = null
                 }
-
-                @KotlessDSLTag
-                class Azure : ProviderGradle() {
-                    var version = "2.78.0"
-                }
             }
 
             /** Configuration of Terraform AWS provider */
@@ -219,10 +177,7 @@ class KotlessGradleConfig(project: Project) : Serializable {
             }
         }
 
-        internal val terraform = when (type) {
-            CloudPlatform.AWS -> TerraformGradle.AWS(TerraformGradle.BackendGradle.AWS(), TerraformGradle.ProviderGradle.AWS())
-            CloudPlatform.Azure -> TerraformGradle.Azure(TerraformGradle.BackendGradle.Azure(), TerraformGradle.ProviderGradle.Azure())
-        } as T
+        internal val terraform = TerraformGradle.AWS(TerraformGradle.BackendGradle.AWS(), TerraformGradle.ProviderGradle.AWS()) as T
 
         @KotlessDSLTag
         fun terraform(configure: T.() -> Unit) {
@@ -236,11 +191,6 @@ class KotlessGradleConfig(project: Project) : Serializable {
     @KotlessDSLTag
     fun aws(configure: CloudGradle.AWS.() -> Unit) {
         cloud = CloudGradle.AWS().also(configure)
-    }
-
-    @KotlessDSLTag
-    fun azure(configure: CloudGradle.Azure.() -> Unit) {
-        cloud = CloudGradle.Azure().also(configure)
     }
 
 

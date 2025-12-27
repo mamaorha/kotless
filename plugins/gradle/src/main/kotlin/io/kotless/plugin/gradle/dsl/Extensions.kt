@@ -54,7 +54,6 @@ class Extensions : Serializable {
 
     /**
      * Configuration of local Kotless execution.
-     * Applicable only for Ktor DSL
      */
     @KotlessDSLTag
     fun local(configure: Local.() -> Unit) {

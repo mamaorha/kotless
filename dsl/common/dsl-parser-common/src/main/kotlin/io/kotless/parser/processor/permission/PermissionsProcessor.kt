@@ -2,8 +2,6 @@ package io.kotless.parser.processor.permission
 
 import io.kotless.*
 import io.kotless.dsl.cloud.aws.*
-import io.kotless.dsl.cloud.azure.Resource
-import io.kotless.dsl.cloud.azure.StorageAccount
 import io.kotless.parser.processor.AnnotationProcessor
 import io.kotless.parser.processor.ProcessorContext
 import io.kotless.parser.utils.psi.annotation.*
@@ -16,7 +14,7 @@ import kotlin.reflect.KClass
 
 object PermissionsProcessor {
     private val PERMISSION_ANNOTATIONS_CLASSES =
-        setOf(S3Bucket::class, SSMParameters::class, DynamoDBTable::class, SQSQueue::class, Cognito::class, SecretManager::class, Resource::class)
+        setOf(S3Bucket::class, SSMParameters::class, DynamoDBTable::class, SQSQueue::class, SNSTopic::class, Cognito::class, SecretManager::class, GameLift::class)
 
     private val permissionsAnnotationProcessor = object : AnnotationProcessor<Unit>() {
         override val annotations: Set<KClass<out Annotation>> = PERMISSION_ANNOTATIONS_CLASSES
@@ -78,6 +76,13 @@ object PermissionsProcessor {
                         permissions.add(AWSPermission(AwsResource.SQSQueue, level, setOf(id)))
                     }
 
+                    SNSTopic::class -> {
+                        val id = annotation.getValue(context, SNSTopic::topicArn)!!
+                        val level = annotation.getEnumValue(context, SNSTopic::level)!!
+                        val region = annotation.getValue(context, SNSTopic::region) ?: ""
+                        permissions.add(AWSPermission(AwsResource.SNSTopic, level, setOf(id), region.takeIf { it.isNotEmpty() }))
+                    }
+
                     Cognito::class -> {
                         val id = annotation.getValue(context, Cognito::userPoolsId)!!
                         val level = annotation.getEnumValue(context, Cognito::level)!!
@@ -90,17 +95,9 @@ object PermissionsProcessor {
                         permissions.add(AWSPermission(AwsResource.SecretManager, level, setOf(id)))
                     }
 
-                    Resource::class -> {
-                        val id = annotation.getValue(context, Resource::id)!!
-                        val level = annotation.getEnumValue(context, Resource::level)!!
-                        permissions.add(AzurePermission(AzureResource.Resource, level, mapOf("id" to id)))
-                    }
-
-                    StorageAccount::class -> {
-                        val name = annotation.getValue(context, StorageAccount::name)!!
-                        val resourceGroup = annotation.getValue(context, StorageAccount::resourceGroup)!!
-                        val level = annotation.getEnumValue(context, StorageAccount::level)!!
-                        permissions.add(AzurePermission(AzureResource.StorageAccount, level, mapOf("name" to name, "resourceGroup" to resourceGroup)))
+                    GameLift::class -> {
+                        val level = annotation.getEnumValue(context, GameLift::level)!!
+                        permissions.add(AWSPermission(AwsResource.GameLift, level, setOf("***")))
                     }
                 }
             }
@@ -140,6 +137,13 @@ object PermissionsProcessor {
                         permissions.add(AWSPermission(AwsResource.SQSQueue, level, setOf(id)))
                     }
 
+                    is SNSTopic -> {
+                        val id = annotation.topicArn
+                        val level = annotation.level
+                        val region = annotation.region.takeIf { it.isNotEmpty() }
+                        permissions.add(AWSPermission(AwsResource.SNSTopic, level, setOf(id), region))
+                    }
+
                     is Cognito -> {
                         val id = annotation.userPoolsId
                         val level = annotation.level
@@ -152,17 +156,9 @@ object PermissionsProcessor {
                         permissions.add(AWSPermission(AwsResource.SecretManager, level, setOf(id)))
                     }
 
-                    is Resource -> {
-                        val id = annotation.id
+                    is GameLift -> {
                         val level = annotation.level
-                        permissions.add(AzurePermission(AzureResource.Resource, level, mapOf("id" to id)))
-                    }
-
-                    is StorageAccount -> {
-                        val name = annotation.name
-                        val resourceGroup = annotation.resourceGroup
-                        val level = annotation.level
-                        permissions.add(AzurePermission(AzureResource.StorageAccount, level, mapOf("name" to name, "resourceGroup" to resourceGroup)))
+                        permissions.add(AWSPermission(AwsResource.GameLift, level, setOf("***")))
                     }
                 }
             }

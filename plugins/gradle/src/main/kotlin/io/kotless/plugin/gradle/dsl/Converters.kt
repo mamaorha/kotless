@@ -17,10 +17,7 @@ internal fun KotlessDSL.toSchema(): KotlessConfig {
 }
 
 internal fun KotlessGradleConfig.CloudGradle<*, *>.toSchema(): KotlessConfig.Cloud<*, *> {
-    return when (type) {
-        CloudPlatform.AWS -> (this as KotlessGradleConfig.CloudGradle.AWS).toSchema()
-        CloudPlatform.Azure -> (this as KotlessGradleConfig.CloudGradle.Azure).toSchema()
-    }
+    return (this as KotlessGradleConfig.CloudGradle.AWS).toSchema()
 }
 
 internal fun KotlessGradleConfig.CloudGradle.AWS.toSchema(): KotlessConfig.Cloud<*, *> {
@@ -44,30 +41,6 @@ internal fun KotlessGradleConfig.CloudGradle.AWS.toSchema(): KotlessConfig.Cloud
                 terraform.provider.version,
                 terraform.provider.profile ?: profile,
                 terraform.provider.region ?: region
-            )
-        )
-    )
-}
-
-internal fun KotlessGradleConfig.CloudGradle.Azure.toSchema(): KotlessConfig.Cloud<*, *> {
-    return KotlessConfig.Cloud.Azure(
-        prefix,
-        KotlessConfig.Cloud.Storage.AzureBlob(
-            storage.container,
-            storage.storageAccount
-        ),
-        KotlessConfig.Cloud.Terraform.Azure(
-            terraform.version,
-            KotlessConfig.Cloud.Terraform.Backend.Azure(
-                KotlessConfig.Cloud.Storage.AzureBlob(
-                    terraform.backend.blob?.container ?: storage.container,
-                    terraform.backend.blob?.storageAccount ?: storage.storageAccount
-                ),
-                terraform.backend.key,
-                terraform.backend.resourceGroup
-            ),
-            KotlessConfig.Cloud.Terraform.Provider.Azure(
-                terraform.provider.version
             )
         )
     )
