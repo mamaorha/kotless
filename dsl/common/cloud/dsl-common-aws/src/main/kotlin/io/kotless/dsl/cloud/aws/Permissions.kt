@@ -30,6 +30,10 @@ annotation class SecretManager(val pattern: String, val level: PermissionLevel)
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS, AnnotationTarget.PROPERTY)
 annotation class SNSTopic(val topicArn: String, val level: PermissionLevel, val region: String = "")
 
+/** Delegates permissions to GameLift resources. Uses "*" as resource since GameLift matchmaking actions don't support resource-level permissions. */
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS, AnnotationTarget.PROPERTY)
+annotation class GameLift(val level: PermissionLevel)
+
 /** Marks a function to consume messages from an SNS topic */
 @Target(AnnotationTarget.FUNCTION)
 annotation class SNSEvent(val topicName: String, val region: String = "")

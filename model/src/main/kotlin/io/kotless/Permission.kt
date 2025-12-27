@@ -66,6 +66,12 @@ enum class AwsResource(
             "DescribeMetricFilters"
         ),
         write = setOf("CreateLogGroup", "DeleteLogGroup", "CreateLogStream", "DeleteLogStream", "PutLogEvents", "DeleteMetricFilter", "PutMetricFilter")
+    ),
+    GameLift(
+        "gamelift",
+        glob = { region, account -> "arn:aws:gamelift:$region:$account" },
+        read = setOf("Describe*", "List*", "Get*", "Search*", "ResolveAlias"),
+        write = setOf("Create*", "Update*", "Delete*", "Start*", "Stop*", "Put*", "Claim*", "Accept*", "Request*", "TagResource", "UntagResource")
     );
 
     companion object {

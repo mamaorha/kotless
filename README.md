@@ -232,6 +232,46 @@ object NotificationHandler {
 * Each message contains fields like `message`, `subject`, `topicArn`, `timestamp`, and optional `messageAttributes`
 * If your handler needs additional AWS permissions (e.g., to write to DynamoDB), use the Permissions API annotations (see [Advanced features](#advanced-features))
 
+### Using GameLift permissions
+
+Kotless allows you to grant AWS GameLift permissions to your Lambda functions using the `@GameLift` annotation. This annotation can be applied to functions, classes, or properties to automatically configure IAM permissions for GameLift resources.
+
+The `@GameLift` annotation always uses `"*"` as the resource since GameLift matchmaking actions (and many other GameLift actions) don't support resource-level permissions.
+
+Here's an example of how to use GameLift permissions:
+
+```kotlin
+import io.kotless.dsl.cloud.aws.GameLift
+import io.kotless.PermissionLevel
+
+@GameLift(level = PermissionLevel.ReadWrite)
+class MatchmakingService {
+    fun startMatchmaking() {
+        // Your code that calls StartMatchmaking
+        // This class now has permissions for:
+        // - gamelift:StartMatchmaking
+        // - gamelift:StopMatchmaking
+        // - gamelift:AcceptMatch
+    }
+    
+    fun stopMatchmaking() {
+        // Your code that calls StopMatchmaking
+    }
+    
+    fun acceptMatch() {
+        // Your code that calls AcceptMatch
+    }
+}
+```
+
+**Key points:**
+
+* The `@GameLift` annotation only requires a `level` parameter
+* The annotation always uses `"*"` as the resource since GameLift matchmaking actions don't support resource-level permissions
+* The `level` parameter can be `PermissionLevel.Read`, `PermissionLevel.Write`, or `PermissionLevel.ReadWrite`
+* The annotation can be applied to functions, classes, or properties
+* Permissions are automatically granted when your application is deployed
+
 ## Local start
 
 Kotless-based applications can start locally as an HTTP server. This functionality is supported by

@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
 
 object PermissionsProcessor {
     private val PERMISSION_ANNOTATIONS_CLASSES =
-        setOf(S3Bucket::class, SSMParameters::class, DynamoDBTable::class, SQSQueue::class, SNSTopic::class, Cognito::class, SecretManager::class)
+        setOf(S3Bucket::class, SSMParameters::class, DynamoDBTable::class, SQSQueue::class, SNSTopic::class, Cognito::class, SecretManager::class, GameLift::class)
 
     private val permissionsAnnotationProcessor = object : AnnotationProcessor<Unit>() {
         override val annotations: Set<KClass<out Annotation>> = PERMISSION_ANNOTATIONS_CLASSES
@@ -94,6 +94,11 @@ object PermissionsProcessor {
                         val level = annotation.getEnumValue(context, SecretManager::level)!!
                         permissions.add(AWSPermission(AwsResource.SecretManager, level, setOf(id)))
                     }
+
+                    GameLift::class -> {
+                        val level = annotation.getEnumValue(context, GameLift::level)!!
+                        permissions.add(AWSPermission(AwsResource.GameLift, level, setOf("***")))
+                    }
                 }
             }
         }
@@ -149,6 +154,11 @@ object PermissionsProcessor {
                         val id = annotation.pattern
                         val level = annotation.level
                         permissions.add(AWSPermission(AwsResource.SecretManager, level, setOf(id)))
+                    }
+
+                    is GameLift -> {
+                        val level = annotation.level
+                        permissions.add(AWSPermission(AwsResource.GameLift, level, setOf("***")))
                     }
                 }
             }

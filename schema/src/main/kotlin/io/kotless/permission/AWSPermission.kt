@@ -20,10 +20,14 @@ open class Permission
 data class AWSPermission(val resource: AwsResource, val level: PermissionLevel, val ids: Set<String>, val region: String? = null): Permission() {
     fun cloudIds(defaultRegion: String, account: String) = ids.map { id ->
         val effectiveRegion = region ?: defaultRegion
-        // If id is already a full ARN, use it as-is; otherwise construct ARN
-        if (id.startsWith("arn:aws:")) {
+        // If id is "***", use it as-is (for actions that don't support resource-level permissions)
+        if (id == "***") {
+            "*"
+        } else if (id.startsWith("arn:aws:")) {
+            // If id is already a full ARN, use it as-is
             id
         } else {
+            // Otherwise construct ARN from resource glob
             "${resource.glob(effectiveRegion, account)}:$id"
         }
     }.toSet()
