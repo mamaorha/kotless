@@ -363,14 +363,7 @@ features as:
 
 Any explanation becomes much better with a proper example.
 
-In the repository's `examples` folder, you can find example projects built with Spring Boot DSL:
-* `spring/site` &mdash; a site about Kotless written with Spring
-  Boot ([spring.site.kotless.io](https://spring.site.kotless.io)). This example demonstrates usage
-  of statics and `@RestController`.
-* `spring/shortener` &mdash; a simple URL shortener written with Spring
-  Boot ([spring.short.kotless.io](https://spring.short.kotless.io)). This example demonstrates usage
-  of `@RestController` (dynamic routes), Permissions API (for DynamoDB access), and Terraform
-  extensions.
+you can find examples at https://github.com/mamaorha/kotless-playground/tree/master
 
 ## Want to know more?
 
