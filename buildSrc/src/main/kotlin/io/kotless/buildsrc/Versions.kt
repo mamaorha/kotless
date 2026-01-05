@@ -13,6 +13,6 @@ object Versions {
     const val logback = "1.2.3"
 
     const val serverlessContainers = "2.0.0-M2"
-    const val springBoot = "3.2.0"
+    const val springBoot = "3.5.9"
     const val spring = "6.0.11"
 }

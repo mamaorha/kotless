@@ -19,7 +19,7 @@ dependencies {
     //Bundled plugins
     implementation("com.github.johnrengelman", "shadow", "8.1.1")
     implementation("com.bmuschko", "gradle-docker-plugin", "6.7.0")
-    implementation("org.springframework.boot", "spring-boot-gradle-plugin", "3.2.0") {
+    implementation("org.springframework.boot", "spring-boot-gradle-plugin", "3.5.9") {
         exclude("com.fasterxml.jackson")
         exclude("com.fasterxml.jackson.core")
         exclude("com.fasterxml.jackson.dataformat")

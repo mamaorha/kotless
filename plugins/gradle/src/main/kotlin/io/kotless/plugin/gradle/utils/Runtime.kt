@@ -20,7 +20,8 @@ internal fun Runtime.isCompatible(target: JavaVersion) = when (this) {
     Runtime.Java11 -> JavaVersion.VERSION_11.isCompatibleWith(target)
     Runtime.Java17 -> JavaVersion.VERSION_17.isCompatibleWith(target)
     Runtime.Java21 -> JavaVersion.VERSION_21.isCompatibleWith(target)
-    Runtime.GraalVM -> JavaVersion.VERSION_21.isCompatibleWith(target)
+    Runtime.Java25 -> JavaVersion.toVersion("25").isCompatibleWith(target)
+    Runtime.GraalVM -> JavaVersion.toVersion("25").isCompatibleWith(target)
     Runtime.Provided -> true
 }
 
@@ -29,6 +30,7 @@ internal fun Project.getRuntimeVersion(target: JavaVersion, config: KotlessConfi
     if (Runtime.Java11.isCompatible(target)) return Runtime.Java11
     if (Runtime.Java17.isCompatible(target)) return Runtime.Java17
     if (Runtime.Java21.isCompatible(target)) return Runtime.Java21
+    if (Runtime.Java25.isCompatible(target)) return Runtime.Java25
 
     return null
 }

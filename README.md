@@ -71,10 +71,10 @@ version = "0.1.0"
 
 
 plugins {
-    //Version of Kotlin should be 1.9.21+
-    kotlin("jvm") version "1.9.21" apply true
+    //Version of Kotlin should be 2.1.0+
+    kotlin("jvm") version "2.1.0" apply true
 
-    id("io.kotless") version "0.3.4" apply true
+    id("io.kotless") version "0.3.5" apply true
 }
 ```
 
@@ -88,7 +88,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.kotless", "spring-boot-lang", "0.3.4")
+    implementation("io.kotless", "spring-boot-lang", "0.3.5")
 }
 ```
 
@@ -205,9 +205,9 @@ Kotless is able to deploy existing Spring Boot application to AWS serverless pla
 it, you'll need to set up a plugin and replace existing dependency with the appropriate Kotless DSL.
 
 For **Spring Boot** you should replace the starter you use (
-e.g. `implementation("org.springframework.boot", "spring-boot-starter-web", "3.2.0)`)
+e.g. `implementation("org.springframework.boot", "spring-boot-starter-web", "3.5.9)`)
 with `implementation("io.kotless", "spring-boot-lang", "0.3.4")`. Note that this dependency bundles
-Spring Boot of version `3.2.0`, so you also may need to upgrade other Spring Boot libraries to this
+Spring Boot of version `3.5.9`, so you also may need to upgrade other Spring Boot libraries to this
 version.
 
 Once it is done, you may hit `deploy` task and make your application serverless. Note, that you will

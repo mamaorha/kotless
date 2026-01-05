@@ -2,7 +2,7 @@ package io.kotless.plugin.gradle.graal.utils
 
 object GraalSettings {
     const val DEFAULT_REFLECT_FILE_NAME = "reflect.json"
-    const val GRAAL_VM_DOCKER_IMAGE = "ghcr.io/graalvm/graalvm-community:21"
+    const val GRAAL_VM_DOCKER_IMAGE = "ghcr.io/graalvm/graalvm-community:25"
 
     val BASE_GRAAL_FLAGS = listOf(
         "--enable-url-protocols=https",

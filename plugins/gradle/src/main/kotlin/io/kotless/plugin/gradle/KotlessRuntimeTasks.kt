@@ -44,7 +44,7 @@ object KotlessRuntimeTasks {
             handler = qualifiedName
             classAnnotations = "@OptIn(io.kotless.InternalAPI::class)"
             config {
-                image = "ghcr.io/graalvm/graalvm-community:21"
+                image = "ghcr.io/graalvm/graalvm-community:25"
                 flags = kotless.webapp.graal.buildArgs
                 useBasicBuildArgs = kotless.webapp.graal.useBasicBuildArgs
                 memoryMb = kotless.webapp.lambda.memoryMb
