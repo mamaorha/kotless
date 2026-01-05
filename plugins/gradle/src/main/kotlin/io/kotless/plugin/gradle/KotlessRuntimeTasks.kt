@@ -131,9 +131,9 @@ object KotlessRuntimeTasks {
             "RUN microdnf install -y rsync",
             "RUN microdnf install -y wget",
             "RUN microdnf install -y unzip",
-            "RUN wget https://services.gradle.org/distributions/gradle-8.5-all.zip",
-            "RUN unzip gradle-8.5-all.zip",
-            "ENV GRADLE_HOME=/app/gradle-8.5",
+            "RUN wget https://services.gradle.org/distributions/gradle-9.2.1-all.zip",
+            "RUN unzip gradle-9.2.1-all.zip",
+            "ENV GRADLE_HOME=/app/gradle-9.2.1",
             "ENV $path"
         )
     }

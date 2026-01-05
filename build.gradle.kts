@@ -26,7 +26,7 @@ subprojects {
     val sourceSets = this.extensions.getByName("sourceSets") as SourceSetContainer
 
 
-    task<Jar>("sourcesJar") {
+    tasks.register<Jar>("sourcesJar") {
         archiveClassifier.set("sources")
         from(sourceSets["main"]!!.allSource)
         this.exclude("io/kotless/graal/aws/runtime/Adapter**")
@@ -34,12 +34,51 @@ subprojects {
 
     publishing {
         publications {
-            this.create("jarPublication", MavenPublication::class.java) {
+            create<MavenPublication>("jarPublication") {
                 artifactId = project.name
 
-                from (project.components.getByName("java"))
-
-                artifact(tasks["sourcesJar"])
+                // Fix for Gradle 9.x: Manually configure dependencies to avoid getDependencyProject() error
+                // Instead of using from(components["java"]) which includes all dependencies,
+                // we'll add the jar and manually configure only external dependencies
+                artifact(tasks.named("jar"))
+                artifact(tasks.named<Jar>("sourcesJar"))
+                
+                // Manually configure dependencies to exclude project dependencies
+                // This prevents the getDependencyProject() error in Gradle 9.x
+                pom {
+                    withXml {
+                        // Get all dependencies from the runtimeClasspath configuration
+                        val runtimeClasspath = project.configurations.getByName("runtimeClasspath")
+                        val externalDeps = runtimeClasspath.allDependencies.filter { 
+                            it !is org.gradle.api.artifacts.ProjectDependency 
+                        }
+                        
+                        val rootNode = asNode()
+                        
+                        // Remove existing dependencies node if it exists
+                        val existingDeps = rootNode.get("dependencies")
+                        if (existingDeps != null) {
+                            if (existingDeps is groovy.util.NodeList) {
+                                existingDeps.forEach { dep ->
+                                    (dep as groovy.util.Node).parent().remove(dep)
+                                }
+                            } else if (existingDeps is groovy.util.Node) {
+                                existingDeps.parent().remove(existingDeps)
+                            }
+                        }
+                        
+                        // Create new dependencies node with only external dependencies
+                        if (externalDeps.isNotEmpty()) {
+                            val depsNode = rootNode.appendNode("dependencies")
+                            externalDeps.forEach { dep ->
+                                val depNode = depsNode.appendNode("dependency")
+                                depNode.appendNode("groupId", dep.group ?: "")
+                                depNode.appendNode("artifactId", dep.name)
+                                depNode.appendNode("version", dep.version ?: "")
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -69,15 +108,14 @@ subprojects {
     detekt {
         parallel = true
 
-        config = rootProject.files("detekt.yml")
-
+        config.setFrom(rootProject.files("detekt.yml"))
+    }
+    
+    // Configure detekt reports on tasks instead of in the detekt block (Gradle 9.x compatibility)
+    tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
         reports {
-            xml {
-                enabled = false
-            }
-            html {
-                enabled = false
-            }
+            xml.required.set(false)
+            html.required.set(false)
         }
     }
 

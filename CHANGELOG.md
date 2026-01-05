@@ -8,11 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 * Updated Spring Boot to version 3.5.9
 * Updated GraalVM to version 25
+* Updated Gradle to version 9.2.1 (required for GraalVM 25/Java 25 support)
 * Added Java 25 runtime support (for AWS Lambda execution)
 
 ## Breaking Changes
 
+* **Gradle 9.2.1+ requirement**: This version requires Gradle 9.2.1 or later to support Java 25 and GraalVM 25. Projects must upgrade their Gradle wrapper to version 9.2.1 or later.
 * **Java 25 runtime requirement**: This version now uses Java 25 runtime for AWS Lambda execution. Projects using this version must use Java 25 or later JDK for development. This is a breaking change as it requires upgrading your JDK version.
+* **GraalVM 25 requirement**: This version now uses GraalVM 25 for graal deployment, make sure you have it installed
 
 # 0.3.4 - 2025-12-26
 

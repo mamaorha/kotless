@@ -31,7 +31,7 @@ super easy deployment of existing Spring applications to AWS serverless platform
 
 Kotless uses Gradle to wrap around the existing building process and insert the deployment into it.
 
-Consider using one of the latest versions of Gradle, starting with the **8.5** version.
+Consider using one of the latest versions of Gradle, starting with the **9.2.1** version.
 
 Basically, if you already use Gradle, you only need to do two things.
 
