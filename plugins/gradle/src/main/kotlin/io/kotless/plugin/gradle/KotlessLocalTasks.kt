@@ -1,6 +1,7 @@
 package io.kotless.plugin.gradle
 
-import io.kotless.*
+import io.kotless.AwsResource
+import io.kotless.InternalAPI
 import io.kotless.plugin.gradle.dsl.KotlessDSL
 import io.kotless.plugin.gradle.dsl.kotless
 import io.kotless.plugin.gradle.tasks.gen.KotlessLocalGenerateTask
@@ -47,11 +48,7 @@ internal object KotlessLocalTasks {
             myCreate<KotlessLocalRunTask>("local-agent") {
                 localstack = local
                 customAgent = graalAgent
-
-                if (kotless.config.dsl.typeOrDefault == DSLType.SpringBoot) {
-                    additionalEnvironment = mapOf("spring.aot.enabled" to "true")
-                }
-
+                additionalEnvironment = mapOf("spring.aot.enabled" to "true")
                 dependsOn(classes)
             }
         }
@@ -110,11 +107,7 @@ internal object KotlessLocalTasks {
                 myCreate<KotlessLocalRunTask>("local-agent") {
                     localstack = local
                     customAgent = graalAgent
-
-                    if (kotless.config.dsl.typeOrDefault == DSLType.SpringBoot) {
-                        additionalEnvironment = mapOf("spring.aot.enabled" to "true")
-                    }
-
+                    additionalEnvironment = mapOf("spring.aot.enabled" to "true")
                     dependsOn(classes, configure)
                 }.onShutDown({
                     stopLocalStack.act()

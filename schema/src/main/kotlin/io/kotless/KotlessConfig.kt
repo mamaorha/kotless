@@ -102,10 +102,9 @@ data class KotlessConfig(
 
     /**
      * Configuration of DSL used for this application
-     * @param type type of dsl that is used
      * @param staticsRoot directory Kotless considers as root for a file resolving
      */
-    data class DSL(val type: DSLType, val staticsRoot: File) : Visitable
+    data class DSL(val staticsRoot: File) : Visitable
 
     /** Configuration of optimizations considered during code generation */
     data class Optimization(val mergeLambda: MergeLambda = MergeLambda.All, val autoWarm: AutoWarm = AutoWarm(enable = true, minutes = 5)) : Visitable {

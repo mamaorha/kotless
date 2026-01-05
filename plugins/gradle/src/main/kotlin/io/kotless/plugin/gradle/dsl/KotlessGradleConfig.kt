@@ -1,7 +1,6 @@
 package io.kotless.plugin.gradle.dsl
 
 import io.kotless.CloudPlatform
-import io.kotless.DSLType
 import io.kotless.KotlessConfig.Optimization.MergeLambda
 import io.kotless.plugin.gradle.utils.gradle.Dependencies
 import io.kotless.plugin.gradle.utils.gradle.myShadowJar
@@ -44,35 +43,13 @@ class KotlessGradleConfig(project: Project) : Serializable {
 
     @KotlessDSLTag
     class DSLGradle(project: Project) : Serializable {
-        private val defaultType by lazy {
-            val types = Dependencies.dsl(project).keys
-            require(types.isNotEmpty()) {
-                """
-                |Kotless was unable to determine DSL type of application.
-                |Either dependency with one of the DSLs (`spring-boot-lang`) should be added, or DSL should be specified manually.
-                |""".trimMargin()
-            }
-            require(types.size <= 1) {
-                """
-                |Kotless was unable to determine DSL type of application. 
-                |There was more than one DSL dependency (of type `spring-boot-lang`) should be added, or DSL should be specified manually.
-                |""".trimMargin()
-            }
-
-            types.single()
-        }
-
-        internal val typeOrDefault: DSLType
-            get() = type ?: defaultType
-
-        /** Type of DSL used by Kotless. By default, will be used inferred from used library */
-        var type: DSLType? = null
+        /** Descriptor for Spring Boot DSL */
+        internal val descriptor: io.kotless.parser.DSLDescriptor
+            get() = io.kotless.parser.spring.SpringBootDescriptor
 
         /** Statics root correctly resolved for DSL */
         internal val resolvedStaticsRoot
-            get() = when (typeOrDefault) {
-                DSLType.SpringBoot -> staticsRoot
-            }
+            get() = staticsRoot
 
         /** Working directory of current project */
         private val workingRoot: File = project.projectDir

@@ -43,7 +43,7 @@ internal class KotlessPlugin : Plugin<Project> {
                     if (kotless.webapp.lambda.runtime == Lambda.Config.Runtime.GraalVM) {
                         setupGraal()
                     } else {
-                        convention.getPlugin<ApplicationPluginConvention>().mainClassName = kotless.config.dsl.typeOrDefault.descriptor.localEntryPoint
+                        convention.getPlugin<ApplicationPluginConvention>().mainClassName = kotless.config.dsl.descriptor.localEntryPoint
 
                         // Setup SNS consumers generation for non-GraalVM builds
                         val kotlessClassOverride = myCreate<KotlessClassOverrideTask>("kotlessClassOverride")

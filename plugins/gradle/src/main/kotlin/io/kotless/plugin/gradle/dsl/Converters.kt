@@ -6,7 +6,7 @@ internal fun KotlessDSL.toSchema(): KotlessConfig {
     return with(config) {
         KotlessConfig(
             cloud!!.toSchema(),
-            KotlessConfig.DSL(dsl.typeOrDefault, dsl.resolvedStaticsRoot),
+            KotlessConfig.DSL(dsl.resolvedStaticsRoot),
             KotlessConfig.Optimization(
                 optimization.mergeLambda,
                 KotlessConfig.Optimization.AutoWarm(optimization.autowarm.enable, optimization.autowarm.minutes)

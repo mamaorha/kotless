@@ -3,6 +3,7 @@ package io.kotless.plugin.gradle.tasks.local
 import io.kotless.Constants
 import io.kotless.InternalAPI
 import io.kotless.parser.LocalParser
+import io.kotless.parser.spring.SpringBootDescriptor
 import io.kotless.plugin.gradle.dsl.*
 import io.kotless.plugin.gradle.utils.gradle.*
 import org.gradle.api.DefaultTask
@@ -54,15 +55,11 @@ internal open class KotlessLocalRunTask : DefaultTask() {
     @TaskAction
     @OptIn(InternalAPI::class)
     fun act() = with(project) {
-        val dsl = Dependencies.dsl(project)
-
-        require(dsl.isNotEmpty()) { "Cannot find \"spring-boot-lang\" dependencies. It's required for local start." }
-        require(dsl.size <= 1) { "Only one dependency should be used for DSL: \"spring-boot-lang\"." }
-
-        val (type, dependency) = dsl.entries.single()
+        val dependency = Dependencies.getSpringBootDependency(project)
+        require(dependency != null) { "Cannot find \"spring-boot-lang\" dependencies. It's required for local start." }
 
         dependencies {
-            myLocal("io.kotless", type.descriptor.localLibrary, dependency.version ?: error("Explicit version is required for Kotless DSL dependency."))
+            myLocal("io.kotless", SpringBootDescriptor.localLibrary, dependency.version ?: error("Explicit version is required for Kotless DSL dependency."))
         }
 
         val run = tasks.myGetByName<JavaExec>("run").apply {
@@ -100,7 +97,7 @@ internal open class KotlessLocalRunTask : DefaultTask() {
         }
 
         try {
-            convention.getPlugin<ApplicationPluginConvention>().mainClassName = kotless.config.dsl.typeOrDefault.descriptor.localEntryPoint
+            convention.getPlugin<ApplicationPluginConvention>().mainClassName = kotless.config.dsl.descriptor.localEntryPoint
             run.standardInput = System.`in`
             run.exec()
         } catch (e: Throwable) {
