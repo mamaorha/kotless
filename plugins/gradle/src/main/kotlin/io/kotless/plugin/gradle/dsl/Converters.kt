@@ -1,6 +1,5 @@
 package io.kotless.plugin.gradle.dsl
 
-import io.kotless.CloudPlatform
 import io.kotless.KotlessConfig
 
 internal fun KotlessDSL.toSchema(): KotlessConfig {

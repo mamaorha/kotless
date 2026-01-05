@@ -21,14 +21,6 @@ class TypedStorage<T>(private val storage: MutableMap<Key<T>, T> = HashMap()) {
         return storage[key]
     }
 
-    fun <K : Key<T>> getOrPut(key: K, defaultValue: () -> T): T {
-        return storage.getOrPut(key, defaultValue)
-    }
-
-    fun addAll(storage: TypedStorage<T>) {
-        this.storage.putAll(storage.storage)
-    }
-
     override fun toString(): String {
         return storage.entries.joinToString(prefix = "{", postfix = "}") { "${it.key}: ${it.value}" }
     }

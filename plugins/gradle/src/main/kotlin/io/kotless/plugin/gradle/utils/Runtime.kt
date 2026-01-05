@@ -1,6 +1,5 @@
 package io.kotless.plugin.gradle.utils
 
-import io.kotless.CloudPlatform
 import io.kotless.KotlessConfig
 import io.kotless.resource.Lambda.Config.Runtime
 import org.gradle.api.JavaVersion

@@ -29,7 +29,7 @@ object EntrypointProcessor : SubTypesProcessor<EntrypointProcessor.Output>() {
             entrypoint.add(klass.makeLambdaEntrypoint(binding))
         }
 
-        require(entrypoint.size != 0) { "There should be a class or object inherited from ${RequestStreamHandler::class} in your app" }
+        require(entrypoint.isNotEmpty()) { "There should be a class or object inherited from ${RequestStreamHandler::class} in your app" }
         require(entrypoint.size == 1) { "There should be only one class or object inherited from ${RequestStreamHandler::class} in your app" }
 
         return entrypoint.first()

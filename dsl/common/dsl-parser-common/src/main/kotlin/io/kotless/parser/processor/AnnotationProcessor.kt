@@ -37,16 +37,4 @@ abstract class AnnotationProcessor<Output : Any> : Processor<Output>() {
             }
         }
     }
-
-    fun processStaticVariables(files: Set<KtFile>, binding: BindingContext, body: (KtProperty, KtAnnotationEntry, KClass<*>) -> Unit) {
-        for (file in files) {
-            file.visitVariables(filter = { property -> property.isAnnotatedWith(binding, annotations) }) { property ->
-                for (annotationKClass in annotations) {
-                    property.getAnnotations(binding, annotationKClass).forEach { annotation ->
-                        body(property, annotation, annotationKClass)
-                    }
-                }
-            }
-        }
-    }
 }
