@@ -9,6 +9,40 @@ import java.io.File
 import java.io.Serializable
 
 /**
+ * Lambda runtime types available for use in build scripts.
+ * 
+ * Usage in build.gradle.kts:
+ * ```
+ * import io.kotless.plugin.gradle.dsl.LambdaRuntime
+ * 
+ * kotless {
+ *     webapp {
+ *         lambda {
+ *             runtime = LambdaRuntime.GraalVM
+ *         }
+ *     }
+ * }
+ * ```
+ */
+@Suppress("unused")
+object LambdaRuntime {
+    @JvmField
+    val Java8 = Runtime.Java8
+    @JvmField
+    val Java11 = Runtime.Java11
+    @JvmField
+    val Java17 = Runtime.Java17
+    @JvmField
+    val Java21 = Runtime.Java21
+    @JvmField
+    val Java25 = Runtime.Java25
+    @JvmField
+    val GraalVM = Runtime.GraalVM
+    @JvmField
+    val Provided = Runtime.Provided
+}
+
+/**
  * Kotless web application
  * It includes ApiGateway REST API definition and Route53 alias with SSL certificate, if present.
  */

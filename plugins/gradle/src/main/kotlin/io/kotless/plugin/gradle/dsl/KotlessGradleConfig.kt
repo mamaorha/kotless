@@ -1,8 +1,6 @@
 package io.kotless.plugin.gradle.dsl
 
-import io.kotless.KotlessConfig.Optimization.MergeLambda
-import io.kotless.plugin.gradle.utils.gradle.Dependencies
-import io.kotless.plugin.gradle.utils.gradle.myShadowJar
+import io.kotless.plugin.gradle.utils.gradle.myShadowJarName
 import org.gradle.api.Project
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import java.io.File
@@ -33,7 +31,7 @@ class KotlessGradleConfig(project: Project) : Serializable {
     /** Name of configuration to use as a classpath */
     var configurationName = "compileClasspath"
 
-    internal var myArchiveTask: String = project.myShadowJar().name
+    internal var myArchiveTask: String = project.myShadowJarName()
 
     /** Set custom archive task that should be used to pack lambda instead of default ShadowJar */
     fun setArchiveTask(task: AbstractArchiveTask) {
@@ -182,6 +180,12 @@ class KotlessGradleConfig(project: Project) : Serializable {
          * * PerPermissions -- lambdas will be merged, if they have equal permissions
          * * All -- all lambdas in context are merged in one
          */
+        enum class MergeLambda {
+            None,
+            PerPermissions,
+            All
+        }
+        
         var mergeLambda: MergeLambda = MergeLambda.All
 
         /**

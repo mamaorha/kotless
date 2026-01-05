@@ -35,6 +35,12 @@ internal inline fun <reified T : Task> TaskContainer.myCreate(name: String, cros
 
 internal fun Project.myShadowJar(name: String = "shadowJar"): ShadowJar = tasks.myGetByName(name)
 
+internal fun Project.myShadowJarName(name: String = "shadowJar"): String {
+    // Try to find the task, but if it doesn't exist yet, return the default name
+    // The task will be created by the Shadow plugin later, and Gradle will resolve it when needed
+    return tasks.findByName(name)?.name ?: name
+}
+
 internal inline fun <reified T : Task> TaskContainer.myGetByName(name: String) = getByName(name) as T
 
 internal const val myLocalConfigurationName = "kotless-local"

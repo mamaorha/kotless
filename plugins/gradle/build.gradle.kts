@@ -15,9 +15,10 @@ dependencies {
     //Parsing
     implementation(project(":dsl:spring:spring-lang-parser"))
     implementation(project(":engine"))
+    api(project(":schema"))
 
     //Bundled plugins
-    implementation("com.gradleup.shadow", "com.gradleup.shadow.gradle.plugin", "9.3.0")
+    implementation("com.gradleup.shadow", "shadow-gradle-plugin", "9.3.0")
     implementation("com.bmuschko", "gradle-docker-plugin", "6.7.0")
     implementation("org.springframework.boot", "spring-boot-gradle-plugin", "3.5.9") {
         exclude("com.fasterxml.jackson")

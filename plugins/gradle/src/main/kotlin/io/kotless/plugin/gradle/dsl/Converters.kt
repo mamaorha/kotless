@@ -8,10 +8,18 @@ internal fun KotlessDSL.toSchema(): KotlessConfig {
             cloud!!.toSchema(),
             KotlessConfig.DSL(dsl.resolvedStaticsRoot),
             KotlessConfig.Optimization(
-                optimization.mergeLambda,
+                optimization.mergeLambda.toSchema(),
                 KotlessConfig.Optimization.AutoWarm(optimization.autowarm.enable, optimization.autowarm.minutes)
             )
         )
+    }
+}
+
+internal fun KotlessGradleConfig.Optimization.MergeLambda.toSchema(): KotlessConfig.Optimization.MergeLambda {
+    return when (this) {
+        KotlessGradleConfig.Optimization.MergeLambda.None -> KotlessConfig.Optimization.MergeLambda.None
+        KotlessGradleConfig.Optimization.MergeLambda.PerPermissions -> KotlessConfig.Optimization.MergeLambda.PerPermissions
+        KotlessGradleConfig.Optimization.MergeLambda.All -> KotlessConfig.Optimization.MergeLambda.All
     }
 }
 

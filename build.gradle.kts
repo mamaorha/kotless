@@ -30,7 +30,7 @@ subprojects {
 
     tasks.register<Jar>("sourcesJar") {
         archiveClassifier.set("sources")
-        from(sourceSets["main"]!!.allSource)
+        from(sourceSets["main"].allSource)
         this.exclude("io/kotless/graal/aws/runtime/Adapter**")
     }
 
@@ -71,7 +71,6 @@ subprojects {
         config.setFrom(rootProject.files("detekt.yml"))
     }
     
-    // Configure detekt reports on tasks instead of in the detekt block (Gradle 9.x compatibility)
     tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
         reports {
             xml.required.set(false)
