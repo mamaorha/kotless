@@ -1,6 +1,7 @@
 package io.kotless.permission
 
-import io.kotless.*
+import io.kotless.AwsResource
+import io.kotless.PermissionLevel
 
 open class Permission
 

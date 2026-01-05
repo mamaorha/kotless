@@ -3,9 +3,7 @@ package io.kotless.plugin.gradle.graal.tasks
 import io.kotless.plugin.gradle.graal.dsl.runtime
 import io.kotless.plugin.gradle.graal.utils.Groups
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 import org.jetbrains.kotlin.incremental.deleteDirectoryContents
 import java.io.File
 import java.io.Serializable

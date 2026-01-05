@@ -1,6 +1,7 @@
 package io.kotless.plugin.gradle.tasks.local
 
-import io.kotless.*
+import io.kotless.Constants
+import io.kotless.InternalAPI
 import io.kotless.parser.LocalParser
 import io.kotless.plugin.gradle.dsl.*
 import io.kotless.plugin.gradle.utils.gradle.*

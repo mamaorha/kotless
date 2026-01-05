@@ -5,10 +5,7 @@ import io.kotless.gen.GenerationContext
 import io.kotless.gen.GenerationFactory
 import io.kotless.gen.factory.aws.route.AbstractRouteFactory
 import io.kotless.terraform.functions.link
-import io.terraformkt.aws.resource.apigateway.api_gateway_method
-import io.terraformkt.aws.resource.apigateway.api_gateway_integration
-import io.terraformkt.aws.resource.apigateway.api_gateway_method_response
-import io.terraformkt.aws.resource.apigateway.api_gateway_integration_response
+import io.terraformkt.aws.resource.apigateway.*
 
 object CorsFactory : GenerationFactory<Application.API, CorsFactory.Output> {
     data class Output(val corsMethods: List<String>, val corsIntegrations: List<String>)

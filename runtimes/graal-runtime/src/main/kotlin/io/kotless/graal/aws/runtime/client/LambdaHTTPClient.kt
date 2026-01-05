@@ -5,9 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotless.graal.aws.runtime.LambdaRouters
 import io.kotless.graal.aws.runtime.log
 import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
+import java.net.http.*
 
 object LambdaHTTPClient {
     private val httpClient = HttpClient.newHttpClient()

@@ -7,7 +7,8 @@ import org.gradle.api.tasks.*
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
-import java.nio.file.*
+import java.nio.file.Files
+import java.nio.file.Path
 import kotlin.io.path.extension
 import kotlin.io.path.isRegularFile
 

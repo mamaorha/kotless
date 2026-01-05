@@ -1,5 +1,3 @@
-import runtime.reactive.trigger
-
 job("Kotless / Build") {
     container("openjdk:11") {
         shellScript {

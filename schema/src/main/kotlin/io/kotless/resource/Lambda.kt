@@ -1,7 +1,6 @@
 package io.kotless.resource
 
 import io.kotless.InternalAPI
-import io.kotless.permission.AWSPermission
 import io.kotless.permission.Permission
 import io.kotless.utils.Visitable
 import java.io.File
