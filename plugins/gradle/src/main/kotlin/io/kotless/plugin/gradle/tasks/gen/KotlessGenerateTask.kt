@@ -68,7 +68,7 @@ internal open class KotlessGenerateTask : DefaultTask() {
     }
 
     private fun parseSources(): Schema {
-        val dsl = myKotless.config.dsl.typeOrDefault
+        val dsl = myKotless.config.dsl.descriptor
         val config = myKotless.toSchema()
         val webapp = myKotless.webapp
         val jar = (project.tasks[myKotless.config.myArchiveTask] as AbstractArchiveTask).archiveFile.get().asFile
@@ -83,7 +83,7 @@ internal open class KotlessGenerateTask : DefaultTask() {
 
         val lambda = Lambda.Config(webapp.lambda.memoryMb, webapp.lambda.timeoutSec, runtime, webapp.lambda.mergedEnvironment, webapp.lambda.vpc)
 
-        val parsed = dsl.descriptor.parser.parse(myAllSources, myAllResources, jar, config, lambda, Dependencies.getDependencies(project))
+        val parsed = dsl.parser.parse(myAllSources, myAllResources, jar, config, lambda, Dependencies.getDependencies(project))
 
         val app = Application(
             dns = webapp.dns?.toSchema(),

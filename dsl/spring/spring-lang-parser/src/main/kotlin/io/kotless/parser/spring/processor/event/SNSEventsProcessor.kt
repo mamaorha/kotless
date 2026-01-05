@@ -7,7 +7,7 @@ import io.kotless.parser.processor.AnnotationProcessor
 import io.kotless.parser.processor.ProcessorContext
 import io.kotless.parser.processor.config.EntrypointProcessor
 import io.kotless.parser.processor.permission.PermissionsProcessor
-import io.kotless.parser.utils.psi.annotation.*
+import io.kotless.parser.utils.psi.annotation.getValue
 import io.kotless.resource.Lambda
 import io.kotless.utils.TypedStorage
 import org.jetbrains.kotlin.psi.KtFile

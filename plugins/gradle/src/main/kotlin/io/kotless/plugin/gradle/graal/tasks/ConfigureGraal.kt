@@ -1,8 +1,6 @@
 package io.kotless.plugin.gradle.graal.tasks
 
-import com.bmuschko.gradle.docker.tasks.container.DockerCreateContainer
-import com.bmuschko.gradle.docker.tasks.container.DockerLogsContainer
-import com.bmuschko.gradle.docker.tasks.container.DockerStartContainer
+import com.bmuschko.gradle.docker.tasks.container.*
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import com.bmuschko.gradle.docker.tasks.image.Dockerfile
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar

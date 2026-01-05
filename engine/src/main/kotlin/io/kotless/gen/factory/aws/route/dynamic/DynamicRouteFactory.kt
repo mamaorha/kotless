@@ -8,11 +8,8 @@ import io.kotless.gen.factory.aws.info.InfoFactory
 import io.kotless.gen.factory.aws.resource.dynamic.LambdaFactory
 import io.kotless.gen.factory.aws.route.AbstractRouteFactory
 import io.kotless.terraform.functions.link
-import io.terraformkt.aws.resource.apigateway.api_gateway_integration
-import io.terraformkt.aws.resource.apigateway.api_gateway_method
+import io.terraformkt.aws.resource.apigateway.*
 import io.terraformkt.aws.resource.lambda.lambda_permission
-import io.terraformkt.aws.resource.apigateway.api_gateway_method_response
-import io.terraformkt.aws.resource.apigateway.api_gateway_integration_response
 
 @OptIn(InternalAPI::class)
 object DynamicRouteFactory : GenerationFactory<Application.API.DynamicRoute, DynamicRouteFactory.Output>, AbstractRouteFactory() {

@@ -1,6 +1,5 @@
 package io.kotless.plugin.gradle.utils
 
-import io.kotless.CloudPlatform
 import io.kotless.KotlessConfig
 import io.kotless.resource.Lambda.Config.Runtime
 import org.gradle.api.JavaVersion
@@ -16,7 +15,6 @@ internal fun Project.getTargetVersion(): JavaVersion? {
     return JavaVersion.toVersion(target.singleOrNull() ?: "1.6")
 }
 
-@Suppress("UnstableApiUsage")
 internal fun Runtime.isCompatible(target: JavaVersion) = when (this) {
     Runtime.Java8 -> JavaVersion.VERSION_1_8.isCompatibleWith(target)
     Runtime.Java11 -> JavaVersion.VERSION_11.isCompatibleWith(target)

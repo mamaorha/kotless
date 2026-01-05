@@ -1,8 +1,6 @@
 package io.kotless.gen.factory.aws.event
 
-import io.kotless.Application
-import io.kotless.InternalAPI
-import io.kotless.KotlessConfig
+import io.kotless.*
 import io.kotless.gen.GenerationContext
 import io.kotless.gen.GenerationFactory
 import io.kotless.gen.factory.aws.info.InfoFactory

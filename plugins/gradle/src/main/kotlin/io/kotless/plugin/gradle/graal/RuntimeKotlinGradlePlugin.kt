@@ -4,10 +4,7 @@ package io.kotless.plugin.gradle.graal
 
 import io.kotless.plugin.gradle.graal.dsl.RuntimePluginExtension
 import io.kotless.plugin.gradle.graal.dsl.runtime
-import io.kotless.plugin.gradle.graal.tasks.ConfigureGraal
-import io.kotless.plugin.gradle.graal.tasks.GenerateAdapter
-import io.kotless.plugin.gradle.graal.tasks.createGraalJar
-import io.kotless.plugin.gradle.graal.tasks.createShadowJarGraal
+import io.kotless.plugin.gradle.graal.tasks.*
 import io.kotless.plugin.gradle.graal.utils.mySourceSets
 import io.kotless.plugin.gradle.graal.utils.sourceSet
 import org.gradle.api.Plugin

@@ -29,8 +29,6 @@ inline fun <reified T> KtAnnotationEntry.getValue(context: BindingContext, param
 inline fun <reified T> AnnotationDescriptor.getValue(param: KProperty<T>): T? = getValue(param.name)
 inline fun <reified T> AnnotationDescriptor.getValue(param: String): T? = argumentValue(param)?.value as T?
 
-fun KtAnnotationEntry.getURIPath(context: BindingContext, param: KProperty<String>) = getValue(context, param)?.toURIPath()
-fun KtAnnotationEntry.getURIPath(context: BindingContext, param: String) = getValue<String>(context, param)?.toURIPath()
 fun KtAnnotationEntry.getURIPaths(context: BindingContext, param: KProperty<Array<String>>) = getArrayValue(context, param)?.map { it.toURIPath() }
 fun KtAnnotationEntry.getURIPaths(context: BindingContext, param: String) = getArrayValue<String>(context, param)?.map { it.toURIPath() }
 
@@ -41,8 +39,6 @@ inline fun <reified T : Any> KtAnnotationEntry.getArrayValue(context: BindingCon
 inline fun <reified T : Any> KtAnnotationEntry.getArrayValue(context: BindingContext, param: String): Array<T>? {
     return getDescriptor(context).getArrayValue(param)
 }
-
-inline fun <reified T : Any> AnnotationDescriptor.getArrayValue(param: KProperty<Array<T>>): Array<T>? = getArrayValue(param.name)
 
 inline fun <reified T : Any> AnnotationDescriptor.getArrayValue(param: String): Array<T>? {
     return (argumentValue(param)?.value as? List<*>)?.map { (it as? ConstantValue<*>)?.value ?: it }?.map { it as T }?.toTypedArray()

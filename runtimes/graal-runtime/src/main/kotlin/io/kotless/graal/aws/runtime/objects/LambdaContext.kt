@@ -1,9 +1,6 @@
 package io.kotless.graal.aws.runtime.objects
 
-import com.amazonaws.services.lambda.runtime.ClientContext
-import com.amazonaws.services.lambda.runtime.CognitoIdentity
-import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.lambda.runtime.LambdaLogger
+import com.amazonaws.services.lambda.runtime.*
 import io.kotless.graal.aws.runtime.LambdaEnvironment
 import java.util.*
 

@@ -1,8 +1,6 @@
 package io.kotless.plugin.gradle.tasks.local
 
 import io.kotless.*
-import io.kotless.plugin.gradle.tasks.local.LocalStackRunner.Start
-import io.kotless.plugin.gradle.tasks.local.LocalStackRunner.Stop
 import io.kotless.plugin.gradle.utils.gradle.Groups
 import org.gradle.api.DefaultTask
 import org.gradle.api.logging.Logger
@@ -11,7 +9,6 @@ import org.gradle.api.tasks.TaskAction
 import org.testcontainers.containers.localstack.LocalStackContainer
 import org.testcontainers.utility.ResourceReaper
 import java.util.*
-import kotlin.collections.HashMap
 
 /**
  * Class composing tasks to work with LocalStack.

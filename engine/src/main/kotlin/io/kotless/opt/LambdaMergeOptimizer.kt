@@ -24,7 +24,7 @@ object LambdaMergeOptimizer : SchemaOptimizer {
      */
     fun merge(lambdas: TypedStorage<Lambda>, level: Optimization.MergeLambda, context: OptimizationContext): Map<TypedStorage.Key<Lambda>, Lambda> {
         return when (level) {
-            Optimization.MergeLambda.None -> lambdas.entries.map { it.key to it.value }.toMap()
+            Optimization.MergeLambda.None -> lambdas.entries.associate { it.key to it.value }
             Optimization.MergeLambda.All, Optimization.MergeLambda.PerPermissions -> {
                 val grouped = when (level) {
                     Optimization.MergeLambda.PerPermissions -> lambdas.entries.groupBy { (_, it) -> listOf(it.config, it.entrypoint, it.file, it.permissions) }
@@ -37,7 +37,7 @@ object LambdaMergeOptimizer : SchemaOptimizer {
                         val permissions = group.flatMap { it.value.permissions }.toSet()
 
                         val prefix = commonPrefix(group.map { it.value.name })
-                        val mergedName = if (prefix.isEmpty()) "merged" else prefix
+                        val mergedName = prefix.ifEmpty { "merged" }
 
                         val merged = Lambda("${mergedName}-${context.getIndexAndIncrement()}", fst.file, fst.entrypoint, fst.config, permissions)
                         group.map { it.key to merged }

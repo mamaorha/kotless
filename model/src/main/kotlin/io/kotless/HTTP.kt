@@ -38,8 +38,7 @@ enum class MimeType(val mimeText: String, val isBinary: Boolean, val extension: 
     GZIP("application/gzip", true, "gzip");
 
     companion object {
-        fun binary() = values().filter { it.isBinary }.toTypedArray()
-        fun forDeclaration(type: String, subtype: String) = values().find { "${type}/${subtype}" == it.mimeText }
-        fun forFile(file: File) = values().find { it.extension == file.extension }
+        fun binary() = entries.filter { it.isBinary }.toTypedArray()
+        fun forFile(file: File) = entries.find { it.extension == file.extension }
     }
 }

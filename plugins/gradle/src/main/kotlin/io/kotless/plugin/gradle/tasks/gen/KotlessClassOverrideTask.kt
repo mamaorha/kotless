@@ -5,9 +5,7 @@ import io.kotless.plugin.gradle.dsl.KotlessDSL
 import io.kotless.plugin.gradle.dsl.kotless
 import io.kotless.plugin.gradle.spring.resources.SnsConsumersByTopicSource
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.CacheableTask
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 import java.io.File
 
 @CacheableTask

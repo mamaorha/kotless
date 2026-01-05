@@ -1,6 +1,5 @@
 package io.kotless
 
-import io.kotless.utils.Storage
 import io.kotless.utils.Visitable
 import java.io.File
 
@@ -28,10 +27,9 @@ data class KotlessConfig(
      * @param prefix is a prefix with which all the created resources will be prepended
      * @param storage is a storage that should be used to store all Kotless-related data
      * @param terraform is a configuration of Terraform that should be used during the deployment
-     * @param platform is a type of cloud platform to which the deployment will be performed
      */
     sealed class Cloud<T : Cloud.Terraform<*, *>, S : Cloud.Storage>(
-        val prefix: String, val storage: S, val terraform: T, val platform: CloudPlatform
+        val prefix: String, val storage: S, val terraform: T
     ) : Visitable {
 
         /**
@@ -45,7 +43,7 @@ data class KotlessConfig(
         }
 
         /** AWS cloud platform Kotless configuration */
-        class AWS(prefix: String, s3: Storage.S3, terraform: Terraform.AWS) : Cloud<Terraform.AWS, Storage.S3>(prefix, s3, terraform, CloudPlatform.AWS)
+        class AWS(prefix: String, s3: Storage.S3, terraform: Terraform.AWS) : Cloud<Terraform.AWS, Storage.S3>(prefix, s3, terraform)
 
 
         /**
@@ -103,10 +101,9 @@ data class KotlessConfig(
 
     /**
      * Configuration of DSL used for this application
-     * @param type type of dsl that is used
      * @param staticsRoot directory Kotless considers as root for a file resolving
      */
-    data class DSL(val type: DSLType, val staticsRoot: File) : Visitable
+    data class DSL(val staticsRoot: File) : Visitable
 
     /** Configuration of optimizations considered during code generation */
     data class Optimization(val mergeLambda: MergeLambda = MergeLambda.All, val autoWarm: AutoWarm = AutoWarm(enable = true, minutes = 5)) : Visitable {

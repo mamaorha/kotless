@@ -6,7 +6,8 @@ import io.kotless.parser.processor.AnnotationProcessor
 import io.kotless.parser.processor.ProcessorContext
 import io.kotless.parser.utils.psi.annotation.*
 import io.kotless.parser.utils.psi.visitAnnotatedWithReferences
-import io.kotless.permission.*
+import io.kotless.permission.AWSPermission
+import io.kotless.permission.Permission
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.reflections.Reflections
@@ -38,9 +39,8 @@ object PermissionsProcessor {
 
         permissions.addAll(processModulesAnnotated(processor))
 
-        if (processor.config.cloud.platform == CloudPlatform.AWS) {
-            permissions.add(AWSPermission(AwsResource.CloudWatchLogs, PermissionLevel.ReadWrite, setOf("*")))
-        }
+        // Always add CloudWatch Logs permission for AWS
+        permissions.add(AWSPermission(AwsResource.CloudWatchLogs, PermissionLevel.ReadWrite, setOf("*")))
 
         return (permissions).toSet()
     }
