@@ -1,6 +1,5 @@
 package io.kotless.plugin.gradle.dsl
 
-import io.kotless.CloudPlatform
 import io.kotless.KotlessConfig.Optimization.MergeLambda
 import io.kotless.plugin.gradle.utils.gradle.Dependencies
 import io.kotless.plugin.gradle.utils.gradle.myShadowJar
@@ -72,12 +71,12 @@ class KotlessGradleConfig(project: Project) : Serializable {
         dsl.configure()
     }
 
-    sealed class CloudGradle<S : CloudGradle.StorageGradle, T : CloudGradle.TerraformGradle<*, *>>(val type: CloudPlatform) : Serializable {
+    sealed class CloudGradle<S : CloudGradle.StorageGradle, T : CloudGradle.TerraformGradle<*, *>> : Serializable {
 
         /** Prefix with which all created resources will be prepended */
         var prefix: String = ""
 
-        class AWS : CloudGradle<StorageGradle.S3, TerraformGradle.AWS>(CloudPlatform.AWS) {
+        class AWS : CloudGradle<StorageGradle.S3, TerraformGradle.AWS>() {
             lateinit var profile: String
             lateinit var region: String
         }

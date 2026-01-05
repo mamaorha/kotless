@@ -15,7 +15,6 @@ internal fun Project.getTargetVersion(): JavaVersion? {
     return JavaVersion.toVersion(target.singleOrNull() ?: "1.6")
 }
 
-@Suppress("UnstableApiUsage")
 internal fun Runtime.isCompatible(target: JavaVersion) = when (this) {
     Runtime.Java8 -> JavaVersion.VERSION_1_8.isCompatibleWith(target)
     Runtime.Java11 -> JavaVersion.VERSION_11.isCompatibleWith(target)

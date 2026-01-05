@@ -18,10 +18,6 @@ object Constants {
         const val serverPort = "SERVER_PORT"
         const val autowarmMinutes = "AUTOWARM_MINUTES"
 
-        object Kotless {
-            const val workingDir = "WORKING_DIR"
-        }
-
         object Spring {
             const val classToStart = "CLASS_TO_START"
         }

@@ -39,9 +39,8 @@ object PermissionsProcessor {
 
         permissions.addAll(processModulesAnnotated(processor))
 
-        if (processor.config.cloud.platform == CloudPlatform.AWS) {
-            permissions.add(AWSPermission(AwsResource.CloudWatchLogs, PermissionLevel.ReadWrite, setOf("*")))
-        }
+        // Always add CloudWatch Logs permission for AWS
+        permissions.add(AWSPermission(AwsResource.CloudWatchLogs, PermissionLevel.ReadWrite, setOf("*")))
 
         return (permissions).toSet()
     }
