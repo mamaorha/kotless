@@ -7,10 +7,9 @@ import io.kotless.parser.spring.SpringBootDescriptor
 import io.kotless.plugin.gradle.dsl.*
 import io.kotless.plugin.gradle.utils.gradle.*
 import org.gradle.api.DefaultTask
-import org.gradle.api.plugins.ApplicationPluginConvention
+import org.gradle.api.plugins.JavaApplication
 import org.gradle.api.tasks.*
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getPlugin
 import java.io.File
 
 /**
@@ -84,8 +83,9 @@ internal open class KotlessLocalRunTask : DefaultTask() {
 
             isIgnoreExitValue = true
 
-            if (customAgent != null) {
-                this.jvmArguments.add(customAgent)
+            val agent = customAgent
+            if (agent != null) {
+                this.jvmArguments.add(agent)
             } else if (myKotless.extensions.local.debugPort != null) {
                 debugOptions {
                     it.enabled.set(true)
@@ -97,7 +97,7 @@ internal open class KotlessLocalRunTask : DefaultTask() {
         }
 
         try {
-            convention.getPlugin<ApplicationPluginConvention>().mainClassName = kotless.config.dsl.descriptor.localEntryPoint
+            extensions.getByType(JavaApplication::class.java).mainClass.set(kotless.config.dsl.descriptor.localEntryPoint)
             run.standardInput = System.`in`
             run.exec()
         } catch (e: Throwable) {

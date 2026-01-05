@@ -31,7 +31,7 @@ object EnvironmentManager {
         val configuration = CompilerConfiguration().apply {
             addJvmClasspathRoots(PathUtil.getJdkClassesRootsFromCurrentJre() + libraries)
             put(CommonConfigurationKeys.MODULE_NAME, DEFAULT_MODULE_NAME)
-            put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
+            put(CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
         }
 
         return KotlinCoreEnvironment.createForProduction(Disposable { }, configuration, EnvironmentConfigFiles.JVM_CONFIG_FILES)

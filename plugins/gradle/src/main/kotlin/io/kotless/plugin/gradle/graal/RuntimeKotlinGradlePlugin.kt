@@ -14,7 +14,7 @@ import org.gradle.kotlin.dsl.get
 class RuntimeKotlinGradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            pluginManager.apply("com.github.johnrengelman.shadow")
+            pluginManager.apply("com.gradleup.shadow")
             pluginManager.apply("com.bmuschko.docker-remote-api")
 
             runtime = RuntimePluginExtension()

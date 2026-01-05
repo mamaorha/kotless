@@ -3,7 +3,7 @@ version = rootProject.version
 
 
 plugins {
-    kotlin("plugin.serialization") version "1.9.21" apply true
+    kotlin("plugin.serialization") version "2.3.0" apply true
 }
 
 dependencies {

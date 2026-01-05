@@ -8,8 +8,8 @@ repositories {
 }
 
 dependencies {
-    implementation(gradleApi())
-    implementation(gradleKotlinDsl())
+    compileOnly(gradleApi())
+    compileOnly(gradleKotlinDsl())
     implementation("org.jetbrains.kotlin", "kotlin-gradle-plugin", Versions.kotlin)
 
     //Parsing
@@ -17,7 +17,7 @@ dependencies {
     implementation(project(":engine"))
 
     //Bundled plugins
-    implementation("com.github.johnrengelman", "shadow", "8.1.1")
+    implementation("com.gradleup.shadow", "com.gradleup.shadow.gradle.plugin", "9.3.0")
     implementation("com.bmuschko", "gradle-docker-plugin", "6.7.0")
     implementation("org.springframework.boot", "spring-boot-gradle-plugin", "3.5.9") {
         exclude("com.fasterxml.jackson")

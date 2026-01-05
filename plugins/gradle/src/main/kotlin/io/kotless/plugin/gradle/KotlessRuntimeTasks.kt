@@ -10,7 +10,7 @@ import io.kotless.plugin.gradle.utils.gradle.*
 import org.codehaus.plexus.util.Os
 import org.graalvm.buildtools.gradle.dsl.GraalVMExtension
 import org.gradle.api.Project
-import org.gradle.api.plugins.ApplicationPluginConvention
+import org.gradle.api.plugins.JavaApplication
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getPlugin
@@ -74,7 +74,7 @@ object KotlessRuntimeTasks {
         applyPluginSafely("org.springframework.boot")
         applyPluginSafely("org.graalvm.buildtools.native")
 
-        convention.getPlugin<ApplicationPluginConvention>().mainClassName = MainSource.className
+        extensions.getByType(JavaApplication::class.java).mainClass.set(MainSource.className)
         extensions.getByType(SpringBootExtension::class.java).mainClass.set(MainSource.className)
         val graalVmExtensionBinaries = extensions.getByType(GraalVMExtension::class.java).binaries.getByName("main")
         graalVmExtensionBinaries.buildArgs(

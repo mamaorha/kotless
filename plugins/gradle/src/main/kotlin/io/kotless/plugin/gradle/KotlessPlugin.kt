@@ -11,8 +11,7 @@ import io.kotless.plugin.gradle.utils.gradle.*
 import io.kotless.resource.Lambda
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.ApplicationPluginConvention
-import org.gradle.kotlin.dsl.getPlugin
+import org.gradle.api.plugins.JavaApplication
 
 /**
  * Implementation of Kotless plugin
@@ -29,7 +28,7 @@ import org.gradle.kotlin.dsl.getPlugin
 internal class KotlessPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         with(project) {
-            applyPluginSafely("com.github.johnrengelman.shadow")
+            applyPluginSafely("com.gradleup.shadow")
             applyPluginSafely("application")
 
             configurations.create(myLocalConfigurationName)
@@ -43,7 +42,7 @@ internal class KotlessPlugin : Plugin<Project> {
                     if (kotless.webapp.lambda.runtime == Lambda.Config.Runtime.GraalVM) {
                         setupGraal()
                     } else {
-                        convention.getPlugin<ApplicationPluginConvention>().mainClassName = kotless.config.dsl.descriptor.localEntryPoint
+                        extensions.getByType(JavaApplication::class.java).mainClass.set(kotless.config.dsl.descriptor.localEntryPoint)
 
                         // Setup SNS consumers generation for non-GraalVM builds
                         val kotlessClassOverride = myCreate<KotlessClassOverrideTask>("kotlessClassOverride")

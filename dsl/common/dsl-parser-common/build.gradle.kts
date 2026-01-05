@@ -15,7 +15,7 @@ dependencies {
 }
 
 tasks.withType<KotlinJvmCompile> {
-    kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs
+    compilerOptions {
+        // Preserve existing freeCompilerArgs
     }
 }

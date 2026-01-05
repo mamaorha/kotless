@@ -21,7 +21,7 @@ object ResolveUtil {
 
     private fun analyze(
         project: Project, files: Collection<KtFile>, configuration: CompilerConfiguration,
-        factory: (GlobalSearchScope) -> PackagePartProvider, trace: BindingTrace = CliBindingTrace()
+        factory: (GlobalSearchScope) -> PackagePartProvider, trace: BindingTrace = CliBindingTrace(project)
     ): AnalysisResult {
         return TopDownAnalyzerFacadeForJVM.analyzeFilesWithJavaIntegration(
             project, files, trace, configuration, factory

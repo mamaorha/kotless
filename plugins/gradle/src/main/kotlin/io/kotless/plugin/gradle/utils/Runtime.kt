@@ -7,7 +7,11 @@ import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 internal fun Project.getTargetVersion(): JavaVersion? {
-    val target = tasks.withType(KotlinJvmCompile::class.java).map { it.kotlinOptions.jvmTarget }.distinct()
+    val target = tasks.withType(KotlinJvmCompile::class.java).map { 
+        val jvmTarget = it.compilerOptions.jvmTarget.get()
+        // Extract version number from enum name (e.g., "JVM_25" -> "25")
+        jvmTarget.toString().removePrefix("JVM_").takeIf { it.isNotEmpty() } ?: "1.6"
+    }.distinct()
     if (target.size > 1) {
         return null
     }

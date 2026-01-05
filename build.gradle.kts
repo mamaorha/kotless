@@ -1,11 +1,13 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 group = "io.kotless"
 version = "0.3.5"
 
 plugins {
     id("io.gitlab.arturbosch.detekt") version ("1.23.4") apply true
-    kotlin("jvm") version "1.9.21" apply false
+    kotlin("jvm") version "2.3.0" apply false
     `maven-publish`
 }
 
@@ -37,48 +39,8 @@ subprojects {
             create<MavenPublication>("jarPublication") {
                 artifactId = project.name
 
-                // Fix for Gradle 9.x: Manually configure dependencies to avoid getDependencyProject() error
-                // Instead of using from(components["java"]) which includes all dependencies,
-                // we'll add the jar and manually configure only external dependencies
                 artifact(tasks.named("jar"))
                 artifact(tasks.named<Jar>("sourcesJar"))
-                
-                // Manually configure dependencies to exclude project dependencies
-                // This prevents the getDependencyProject() error in Gradle 9.x
-                pom {
-                    withXml {
-                        // Get all dependencies from the runtimeClasspath configuration
-                        val runtimeClasspath = project.configurations.getByName("runtimeClasspath")
-                        val externalDeps = runtimeClasspath.allDependencies.filter { 
-                            it !is org.gradle.api.artifacts.ProjectDependency 
-                        }
-                        
-                        val rootNode = asNode()
-                        
-                        // Remove existing dependencies node if it exists
-                        val existingDeps = rootNode.get("dependencies")
-                        if (existingDeps != null) {
-                            if (existingDeps is groovy.util.NodeList) {
-                                existingDeps.forEach { dep ->
-                                    (dep as groovy.util.Node).parent().remove(dep)
-                                }
-                            } else if (existingDeps is groovy.util.Node) {
-                                existingDeps.parent().remove(existingDeps)
-                            }
-                        }
-                        
-                        // Create new dependencies node with only external dependencies
-                        if (externalDeps.isNotEmpty()) {
-                            val depsNode = rootNode.appendNode("dependencies")
-                            externalDeps.forEach { dep ->
-                                val depNode = depsNode.appendNode("dependency")
-                                depNode.appendNode("groupId", dep.group ?: "")
-                                depNode.appendNode("artifactId", dep.name)
-                                depNode.appendNode("version", dep.version ?: "")
-                            }
-                        }
-                    }
-                }
             }
         }
 
@@ -96,12 +58,10 @@ subprojects {
     }
 
     tasks.withType<KotlinJvmCompile> {
-        kotlinOptions {
-            jvmTarget = "21"
-            languageVersion = "2.1"
-            apiVersion = "2.1"
-
-            freeCompilerArgs = freeCompilerArgs
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_25)
+            languageVersion.set(KotlinVersion.KOTLIN_2_3)
+            apiVersion.set(KotlinVersion.KOTLIN_2_3)
         }
     }
 

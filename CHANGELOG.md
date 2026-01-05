@@ -6,16 +6,101 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## Changed
 
-* Updated Spring Boot to version 3.5.9
-* Updated GraalVM to version 25
-* Updated Gradle to version 9.2.1 (required for GraalVM 25/Java 25 support)
-* Added Java 25 runtime support (for AWS Lambda execution)
+* Updated Kotlin to 2.3.0 (required for Java 25 support)
+* Updated Spring Boot to 3.5.9
+* Updated GraalVM to 25
+* Updated Gradle to 9.2.1 (required for GraalVM 25/Java 25 support)
+* Added Java 25 runtime support for AWS Lambda execution
 
 ## Breaking Changes
 
-* **Gradle 9.2.1+ requirement**: This version requires Gradle 9.2.1 or later to support Java 25 and GraalVM 25. Projects must upgrade their Gradle wrapper to version 9.2.1 or later.
-* **Java 25 runtime requirement**: This version now uses Java 25 runtime for AWS Lambda execution. Projects using this version must use Java 25 or later JDK for development. This is a breaking change as it requires upgrading your JDK version.
-* **GraalVM 25 requirement**: This version now uses GraalVM 25 for graal deployment, make sure you have it installed
+This release introduces several breaking changes that require action before upgrading:
+
+### Gradle 9.2.1+ Required
+
+This version requires **Gradle 9.2.1 or later** to support Java 25 and GraalVM 25. 
+
+**Action required:** Update your Gradle wrapper to version 9.2.1 or later.
+
+**1. Update the Gradle wrapper version in `gradle/wrapper/gradle-wrapper.properties`:**
+
+```properties
+# Change from:
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.x-bin.zip
+
+# To:
+distributionUrl=https\://services.gradle.org/distributions/gradle-9.2.1-bin.zip
+```
+
+**2. Alternatively, use the Gradle wrapper command to update:**
+
+```bash
+./gradlew wrapper --gradle-version=9.2.1
+```
+
+Or on Windows:
+```powershell
+.\gradlew wrapper --gradle-version=9.2.1
+```
+
+**3. Verify the update:**
+
+```bash
+./gradlew --version
+```
+
+This should show Gradle 9.2.1 or later.
+
+### Java 25 Runtime Required
+
+This version now uses **Java 25 runtime** for AWS Lambda execution. 
+
+**Action required:** 
+- Install Java 25 or later JDK for development
+- Ensure your CI/CD pipelines use Java 25 or later
+
+### GraalVM 25 Required
+
+This version now uses **GraalVM 25** for GraalVM native image deployments.
+
+**Action required:** Install GraalVM 25 if you use GraalVM native image builds.
+
+### Kotlin 2.3.0 Required
+
+This version requires **Kotlin 2.3.0**. Update your build configuration as follows:
+
+**1. Update Kotlin plugin version in your root `build.gradle.kts`:**
+
+```kotlin
+// Change from:
+kotlin("jvm") version "1.9.21" apply false
+
+// To:
+kotlin("jvm") version "2.3.0" apply false
+```
+
+**2. Update Kotlin compiler options in your `build.gradle.kts`:**
+
+```kotlin
+// Change from:
+tasks.withType<KotlinJvmCompile> {
+    kotlinOptions {
+        jvmTarget = "21"
+        languageVersion = "2.1"
+        apiVersion = "2.1"
+    }
+}
+
+// Change to:
+tasks.withType<KotlinJvmCompile> {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_25)
+        languageVersion.set(KotlinVersion.KOTLIN_2_3)
+        apiVersion.set(KotlinVersion.KOTLIN_2_3)
+    }
+}
+```
+
 
 # 0.3.4 - 2025-12-26
 

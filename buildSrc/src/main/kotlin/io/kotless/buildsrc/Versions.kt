@@ -3,7 +3,7 @@ package io.kotless.buildsrc
 object Versions {
     //Note, that it also should be changed in dependencies of buildSrc and in plugins blocks
     //Due to limitations of Gradle DSL
-    const val kotlin = "1.9.21"
+    const val kotlin = "2.3.0"
     const val serialization = "1.6.2"
 
     const val aws = "1.12.618"
