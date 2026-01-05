@@ -13,7 +13,7 @@ serverless application on AWS!
 
 Kotless consists of two main parts:
 
-* DSL provides a way of defining serverless applications. There are three DSLs supported:
+* DSL provides a way of defining serverless applications.
     * **Spring Boot** &mdash; Spring Boot serverless container that is introspected by Kotless. Use
       standard Spring syntax and Kotless will generate deployment.
 * Kotless Gradle Plugin provides a way of deploying serverless application. For that, it:
@@ -88,18 +88,9 @@ repositories {
 }
 
 dependencies {
-    implementation("io.kotless", "kotless-lang", "0.3.4")
-
-    //for Spring Boot (Note, that `spring-boot-lang` depends on Spring Boot version 3.2.0)
-    //implementation("io.kotless", "spring-boot-lang", "0.3.4")
-    //implementation("io.kotless", "spring-boot-lang-aws", "0.3.4")
+    implementation("io.kotless", "spring-boot-lang", "0.3.4")
 }
 ```
-
-*Please note that if you use Spring Boot you will need to replace existing in your project
-dependency with a special Kotless `*-lang` dependency. Also, after that you will need to align
-version of dependent libraries (like Spring Security) with version bundled in `*-lang`
-(see this [paragraph](#integration-with-existing-applications))*
 
 This gives you access to DSL interfaces in your code and sets up a Lambda dispatcher inside your
 application.
@@ -165,6 +156,99 @@ object Pages {
     fun main() = "Hello World!"
 }
 ```
+
+## Local start
+
+Kotless-based applications can start locally as an HTTP server. This functionality is supported by
+all DSLs.
+
+Moreover, Kotless local start may spin up an AWS emulation (docker required). Just instantiate your
+AWS service client using override for Kotless local starts:
+
+```kotlin
+val client = AmazonDynamoDBClientBuilder.standard().withKotlessLocal(AwsResource.DynamoDB).build()
+```
+
+And enable it in Gradle:
+
+```kotlin
+kotless {
+    //<...>
+    extensions {
+        local {
+            //enables AWS emulation (disabled by default)
+            useAWSEmulation = true
+
+            //8080 is default if not supplied, this is mainly used when u want to run multiple kotless services local (give different port to each)
+            port = 8080
+            
+            //when supplying debug port the app with allow remote debug via this port (if you want to run multiple kotless locally provide different debug ports to each)
+            debugPort = 5005
+
+            //when set to 'true' the local kotless will wait until remote debug is attached 
+            suspendDebug = false
+        }
+    }
+}
+```
+
+During the local run, LocalStack will be started and all clients will be pointed to its endpoint
+automatically.
+
+Local start functionality does not require any access to cloud provider, so you may check how your
+application behaves without an AWS account. Also, it gives you the possibility to debug your
+application locally from your IDE.
+
+## Integration with existing applications
+
+Kotless is able to deploy existing Spring Boot application to AWS serverless platform. To do
+it, you'll need to set up a plugin and replace existing dependency with the appropriate Kotless DSL.
+
+For **Spring Boot** you should replace the starter you use (
+e.g. `implementation("org.springframework.boot", "spring-boot-starter-web", "3.2.0)`)
+with `implementation("io.kotless", "spring-boot-lang", "0.3.4")`. Note that this dependency bundles
+Spring Boot of version `3.2.0`, so you also may need to upgrade other Spring Boot libraries to this
+version.
+
+Once it is done, you may hit `deploy` task and make your application serverless. Note, that you will
+still be able to run application locally via `local` Gradle task.
+
+## Advanced features
+
+While Kotless can be used as a framework for the rapid creation of serverless applications, it has
+many more features covering different areas of application.
+
+Including, but not limited to:
+
+* **Lambdas auto-warming** &mdash; Kotless creates schedulers to execute warming sequences to never
+  leave your lambdas cold. As a result, applications under moderate load are not vulnerable to
+  cold-start problem.
+* **Permissions management** &mdash; you can declare which permissions to which AWS resources are
+  required for application via annotations on Kotlin functions, classes or objects. Permissions
+  will be granted automatically.
+* **Static resources** &mdash; Kotless will deploy static resources to S3 and set up CDN for them.
+  It may greatly improve the response time of your application and is supported by all DSLs.
+* **Scheduled events** &mdash; Kotless sets up timers to execute `@Scheduled` jobs on schedule;
+* **SNS consumers** &mdash; Kotless automatically creates SNS topics, Lambda functions, and subscriptions for functions annotated with `@SNSEvent`. The infrastructure is generated automatically, and you only need to annotate your handler function;
+* **Terraform extensions** &mdash; Kotless-generated code can be extended by custom Terraform code;
+
+Kotless is in active development, so we are currently working on extending this list with such
+features as:
+
+* Support of multiplatform applications &mdash; Kotless will not use any platform-specific libraries
+  to give you a choice of a Lambda runtime (JVM/JS/Native).
+* Versioned deployment &mdash; Kotless will be able to deploy several versions of the application
+  and maintain one of them as active.
+* Implicit permissions granting &mdash; Kotless will be able to deduce permissions from AWS SDK
+  function calls.
+* Additional event handlers support &mdash; Kotless will generate events subscriptions for other AWS
+  event sources (currently SNS is supported).
+
+## Examples
+
+Any explanation becomes much better with a proper example.
+
+you can find examples at https://github.com/mamaorha/kotless-playground/tree/master
 
 ### Consuming SNS messages
 
@@ -271,99 +355,6 @@ class MatchmakingService {
 * The `level` parameter can be `PermissionLevel.Read`, `PermissionLevel.Write`, or `PermissionLevel.ReadWrite`
 * The annotation can be applied to functions, classes, or properties
 * Permissions are automatically granted when your application is deployed
-
-## Local start
-
-Kotless-based applications can start locally as an HTTP server. This functionality is supported by
-all DSLs.
-
-Moreover, Kotless local start may spin up an AWS emulation (docker required). Just instantiate your
-AWS service client using override for Kotless local starts:
-
-```kotlin
-val client = AmazonDynamoDBClientBuilder.standard().withKotlessLocal(AwsResource.DynamoDB).build()
-```
-
-And enable it in Gradle:
-
-```kotlin
-kotless {
-    //<...>
-    extensions {
-        local {
-            //enables AWS emulation (disabled by default)
-            useAWSEmulation = true
-
-            //8080 is default if not supplied, this is mainly used when u want to run multiple kotless services local (give different port to each)
-            port = 8080
-            
-            //when supplying debug port the app with allow remote debug via this port (if you want to run multiple kotless locally provide different debug ports to each)
-            debugPort = 5005
-
-            //when set to 'true' the local kotless will wait until remote debug is attached 
-            suspendDebug = false
-        }
-    }
-}
-```
-
-During the local run, LocalStack will be started and all clients will be pointed to its endpoint
-automatically.
-
-Local start functionality does not require any access to cloud provider, so you may check how your
-application behaves without an AWS account. Also, it gives you the possibility to debug your
-application locally from your IDE.
-
-## Integration with existing applications
-
-Kotless is able to deploy existing Spring Boot application to AWS serverless platform. To do
-it, you'll need to set up a plugin and replace existing dependency with the appropriate Kotless DSL.
-
-For **Spring Boot** you should replace the starter you use (
-e.g. `implementation("org.springframework.boot", "spring-boot-starter-web", "3.2.0)`)
-with `implementation("io.kotless", "spring-boot-lang", "0.3.4")`. Note that this dependency bundles
-Spring Boot of version `3.2.0`, so you also may need to upgrade other Spring Boot libraries to this
-version.
-
-Once it is done, you may hit `deploy` task and make your application serverless. Note, that you will
-still be able to run application locally via `local` Gradle task.
-
-## Advanced features
-
-While Kotless can be used as a framework for the rapid creation of serverless applications, it has
-many more features covering different areas of application.
-
-Including, but not limited to:
-
-* **Lambdas auto-warming** &mdash; Kotless creates schedulers to execute warming sequences to never
-  leave your lambdas cold. As a result, applications under moderate load are not vulnerable to
-  cold-start problem.
-* **Permissions management** &mdash; you can declare which permissions to which AWS resources are
-  required for application via annotations on Kotlin functions, classes or objects. Permissions
-  will be granted automatically.
-* **Static resources** &mdash; Kotless will deploy static resources to S3 and set up CDN for them.
-  It may greatly improve the response time of your application and is supported by all DSLs.
-* **Scheduled events** &mdash; Kotless sets up timers to execute `@Scheduled` jobs on schedule;
-* **SNS consumers** &mdash; Kotless automatically creates SNS topics, Lambda functions, and subscriptions for functions annotated with `@SNSEvent`. The infrastructure is generated automatically, and you only need to annotate your handler function;
-* **Terraform extensions** &mdash; Kotless-generated code can be extended by custom Terraform code;
-
-Kotless is in active development, so we are currently working on extending this list with such
-features as:
-
-* Support of multiplatform applications &mdash; Kotless will not use any platform-specific libraries
-  to give you a choice of a Lambda runtime (JVM/JS/Native).
-* Versioned deployment &mdash; Kotless will be able to deploy several versions of the application
-  and maintain one of them as active.
-* Implicit permissions granting &mdash; Kotless will be able to deduce permissions from AWS SDK
-  function calls.
-* Additional event handlers support &mdash; Kotless will generate events subscriptions for other AWS
-  event sources (currently SNS is supported).
-
-## Examples
-
-Any explanation becomes much better with a proper example.
-
-you can find examples at https://github.com/mamaorha/kotless-playground/tree/master
 
 ## Want to know more?
 
