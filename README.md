@@ -29,6 +29,8 @@ super easy deployment of existing Spring applications to AWS serverless platform
 
 ### Setting up project
 
+**Important:** Since this is a fork and we cannot release versions to Maven/Gradle repositories, you will need to clone this repository and run the `publishToLocalMaven` task under `kotless/tasks/publishing` to make the Kotless plugin and libraries available locally before using them in your project.
+
 Kotless uses Gradle to wrap around the existing building process and insert the deployment into it.
 
 Consider using one of the latest versions of Gradle, starting with the **8.5** version.
@@ -50,6 +52,7 @@ pluginManagement {
     }
 
     repositories {
+        mavenLocal() // Required for locally published fork version
         maven(url = uri("https://packages.jetbrains.team/maven/p/ktls/maven"))
         gradlePluginPortal()
         mavenCentral()
@@ -82,6 +85,7 @@ Secondly, add Spring Boot DSL as a library to your application:
 
 ```kotlin
 repositories {
+    mavenLocal() // Required for locally published fork version
     mavenCentral()
     //Kotless repository
     maven(url = uri("https://packages.jetbrains.team/maven/p/ktls/maven"))
@@ -104,6 +108,8 @@ debug your application -- just use `local` Gradle task.
 
 If you don't have an AWS account, you can create it following simple
 [instruction](https://hadihariri.com/2020/05/12/from-zero-to-lamda-with-kotless/) by Hadi Hariri.
+
+Note: the above link by Hadi Hariri is very detailed and thats the reason i kept it but there is a leaner&more updated version [HERE](Aws-Setup.md)
 
 If you have an AWS account and want to perform the real deployment &mdash; let's set up everything
 for it! It's rather simple:
